@@ -73,9 +73,6 @@
 								</li>
 							</ul>
 						</nav>
-						<h2 class="row col-lg-offset-4 col-lg-4">
 			<?php
-						echo $titre_page[$page];
-						echo '</h2>';
 				}
 			?>

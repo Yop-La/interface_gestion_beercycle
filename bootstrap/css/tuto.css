@@ -7,51 +7,37 @@ body {
   border: 2px solid black;
   border-radius: 6px;
 }*/
-.align_bloc {
-  display: table-cell;
-  vertical-align: midlle;
-  float: none;
-}
-/*mise en forme du formulaire demande zfw*/
-#form_dmd label{
-display: inline-block;
-width : 45%;
-}
-#form_dmd input,select{
-display: inline-block;
-width: 45%;
-margin: 1%;
-}
-#form_dmd input[type=submit]{
-margin-left: 22.5%;
-width: 45%;
-}
 /*mise en forme du formulaire dauthenfication */
 .form_authentification{
 padding-top : 140px;
 padding-bottom: 150px;
 }
-#espace_membre p{
-text-align: center;
+.submit_authentification{
+display: block;
+margin-right: auto;
+margin-left: auto;
+margin-top: 15px;
+width : 100px;
 }
+/*fin mise en forme du formulaire d'authentification */
 
+
+/* mise en forme bannière et menu*/
+
+/* centre le logo beercycle dans la bannière */
 img{
 display: block;
 margin: auto;
 }
-h1,h2{
-text-align: center;
-}
-p{
-text-align: justify;
-text-justify: inter-word;
-}
-body{
-background-color: #0E6CD1;
+
+.titre_banniere{
+padding-top: 20px;
+color: #D9534F;
 }
 
-.posi-footer{
-padding-top: 50px;
+
+h1,h2{
+text-align: center;
 }
 
 /* pour mettre en noir et en gras le texte -> sert dans la mise en forme adaptive du menu */
@@ -59,7 +45,18 @@ padding-top: 50px;
 font-weight: bold;
 }
 
-.titre_banniere{
-padding-top: 20px;
-color: red;
+/* fin mise en forme bannière */
+
+
+/* couleur bleu du fon d'écran */
+body{
+background-color: #0E6CD1;
 }
+
+/*mise en forme footer*/
+.posi-footer{
+padding-top: 50px;
+}
+
+
+
