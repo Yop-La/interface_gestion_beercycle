@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 	<html>
   <head>
+		<title> Beerecyle Access</title>
     <meta charset="utf-8">
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap/css/tuto.css" rel="stylesheet">
-		<link href="assets/css/bootstrap-theme.min.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <?php include("header.html"); ?>
-      <?php include("menu.js"); ?>
-
+      <?php include("header.html");
+      			include("menu.php"); 
+						afficherMenuEtTitre(1,'access');			
+			?>
+			
 			<div class="row">
 				<section class="col-lg-offset-4 col-lg-4">	
 					<div class="row form_authentification">
@@ -24,22 +26,13 @@
 					</div>
 				</section>
 			</div>
-			<footer class="row navbar navbar-default">
-				<div class="posi-footer">
-					<ul class="nav col-lg-offset-4 col-lg-2">
-						<li class="gras"><a href='#'><em>Beercycle</em></a></li>
-						<li><a href='#'>Who are we ?</a></li>
-						<li><a href='#'>Contact us</a></li>
-					</ul>
-					<ul class="nav col-lg-2">
-						<li class="gras"><a href='#'><em>Our stores</em></a></li>
-						<li><a href='#'>Zefoneworld</a></li>
-						<li><a href='#'>Brazaville</a></li>
-						<li><a href='#'>kinshasa</a></li>
-					<ul>
-				</div>
-			</footer>
-    </div>
+
+			
+			<?php 
+					/* Pied de page  */		
+      		include("footer.html"); 
+			?>
+  	</div>
 		<script src="bootstrap/js/jquery.js"></script> 
     <script src="bootstrap/js/bootstrap.min.js"></script>
   </body>

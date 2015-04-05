@@ -34,6 +34,11 @@ padding-bottom: 150px;
 #espace_membre p{
 text-align: center;
 }
+
+img{
+display: block;
+margin: auto;
+}
 h1,h2{
 text-align: center;
 }
@@ -49,6 +54,12 @@ background-color: #0E6CD1;
 padding-top: 50px;
 }
 
-.gras{
+/* pour mettre en noir et en gras le texte -> sert dans la mise en forme adaptive du menu */
+.Bold{
 font-weight: bold;
+}
+
+.titre_banniere{
+padding-top: 20px;
+color: red;
 }
