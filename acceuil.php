@@ -9,11 +9,8 @@
   <body>
     <div class="container">
       <?php include("header.html"); ?>
-			<nav class="row navbar navbar-default">
-				<ul class="nav navbar-nav">
-					<li> <a href="#">Homepage</a> </li>
-				</ul>
-			</nav>
+      <?php include("menu.js"); ?>
+
 			<div class="row">
 				<section class="col-lg-offset-4 col-lg-4">	
 					<div class="row form_authentification">
@@ -47,6 +44,8 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
+
+
 
 
 
