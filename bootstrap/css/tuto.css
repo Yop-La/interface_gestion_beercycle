@@ -1,0 +1,54 @@
+body {
+  padding-top: 10px;
+}
+
+/*[class*="col-"], footer {
+  background-color: lightgreen;
+  border: 2px solid black;
+  border-radius: 6px;
+}*/
+.align_bloc {
+  display: table-cell;
+  vertical-align: midlle;
+  float: none;
+}
+/*mise en forme du formulaire demande zfw*/
+#form_dmd label{
+display: inline-block;
+width : 45%;
+}
+#form_dmd input,select{
+display: inline-block;
+width: 45%;
+margin: 1%;
+}
+#form_dmd input[type=submit]{
+margin-left: 22.5%;
+width: 45%;
+}
+/*mise en forme du formulaire dauthenfication */
+.form_authentification{
+padding-top : 140px;
+padding-bottom: 150px;
+}
+#espace_membre p{
+text-align: center;
+}
+h1,h2{
+text-align: center;
+}
+p{
+text-align: justify;
+text-justify: inter-word;
+}
+body{
+background-color: #0E6CD1;
+}
+
+.posi-footer{
+padding-top: 50px;
+}
+
+.gras{
+font-weight: bold;
+}
