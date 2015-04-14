@@ -7,18 +7,6 @@ body {
   border: 2px solid black;
   border-radius: 6px;
 }*/
-/*mise en forme du formulaire dauthenfication */
-.form_authentification{
-padding-top : 140px;
-padding-bottom: 150px;
-}
-.submit_authentification{
-display: block;
-margin-right: auto;
-margin-left: auto;
-margin-top: 15px;
-width : 100px;
-}
 /*fin mise en forme du formulaire d'authentification */
 
 
@@ -40,11 +28,6 @@ h1,h2{
 text-align: center;
 }
 
-/* pour mettre en noir et en gras le texte -> sert dans la mise en forme adaptive du menu */
-.Bold{
-font-weight: bold;
-}
-
 /* fin mise en forme bannière */
 
 
@@ -53,10 +36,34 @@ body{
 background-color: #0E6CD1;
 }
 
+/* mise en forme des titres de page */
+.titre_page{
+padding-bottom: 40px;
+}
+
 /*mise en forme footer*/
 .posi-footer{
 padding-top: 50px;
 }
+/* fin mise en forme footer */
 
+/* mise en forme générale */
 
+/* pour mettre en noir et en gras le texte -> sert dans la mise en forme adaptive du menu */
+.Bold{
+font-weight: bold;
+}
 
+/* pour centrer des blocs */
+.centrer{
+display: block;
+margin-right: auto;
+margin-left: auto;
+width : 100px;
+}
+
+/* pour écarter le contenu du menu et du footer */
+.contenu{
+padding-top : 70px;
+padding-bottom: 100px;
+}

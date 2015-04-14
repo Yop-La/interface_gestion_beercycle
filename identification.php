@@ -1,10 +1,10 @@
 <?php
-
   session_start();
-  
+  header ('Content-type:text/html; charset=utf-8');
+ 
 	// fonction
   function pas_authentification($entre){
-    $_SESSION['identification']='false : '.$entre;
+    $_SESSION['identification']=false;
     header('Location: access.php');
     exit;
   }
@@ -12,7 +12,7 @@
 // script d'authenfication
 
 if(!(isset($_POST['username']) and isset($_POST['password']))){
-   pas_authentification('pas instancie');   
+   pas_authentification();   
 }else{
   try
   {
@@ -21,7 +21,7 @@ if(!(isset($_POST['username']) and isset($_POST['password']))){
   }
   catch(Exception $e)
   {
-					pas_authentification('pas connecté');
+					pas_authentification();
           die('Erreur : '.$e->getMessage());
   }
   $req = $bdd->prepare('SELECT vi_password FROM bee_visitor_infos where vi_username = ?');
@@ -30,16 +30,16 @@ if(!(isset($_POST['username']) and isset($_POST['password']))){
     do
     {
       if($row['vi_password']==$_POST['password']){
-        $_SESSION['identification']='true';  
+        $_SESSION['identification']=true;  
         header('Location: acceuil.php');
         echo('salut');
         exit;
       }else{
-        pas_authentification('2');
+        pas_authentification();
       }
     }while($row = $req->fetch());
     }else{    
-      pas_authentification('3');
+      pas_authentification();
     }
   
 }
