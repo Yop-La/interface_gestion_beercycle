@@ -1,10 +1,10 @@
 <?php
 	session_start();
-  header ('Content-type:text/html; charset=utf-8');
+	header ('Content-type:text/html; charset=utf-8');
 	if(!isset($_SESSION['identification']))
 	{
 			$_SESSION['identification']=false;
-	}
+	}		
 ?>
 
 <!DOCTYPE html>
@@ -20,31 +20,17 @@
       <?php include("header.php");
       			include("menu.php");
 						/* retourne un menu qui change en fonction de la page et du visiteur ( de ses droits ) */
-						afficherMenuEtTitre(1,'access');
-						if(!$_SESSION['identification'])
+						afficherMenuEtTitre(1,'commandeBEE');
+						if($_SESSION['identification'])
 						{
 			?>
-			<section class="row contenu">
-				<article class="col-lg-offset-4 col-lg-4">	
-						<form class="well" method="post" action="traitement_bdd/identification.php">
-							<legend>Authentification</legend>
-							<div class="form-group">
-								<label for="username">User name</label>
-								<input name="username" id="username" type="text" class="form-control">
-							</div>
-							<div class="form-group">
-								<label for="password">Password </label>
-								<input name="password" id="password" type="password" class="form-control">
-							</div>
-							<button type="submit" class="btn btn-danger centrer"> Submit </button>
-						</form>
-				</article>
-			</section>
 
-			
+
+
+
 			<?php 
 						}else
-					{
+						{
 							echo header('Location: acceuil.php');
 						}
 					/* Pied de page  */		
@@ -55,8 +41,4 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
-
-
-
-
 
