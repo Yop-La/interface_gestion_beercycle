@@ -16,7 +16,7 @@
     <link rel='stylesheet' href='watable/watable.css'/>	
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap/css/tuto.css" rel="stylesheet"> 
- 		<script src="bootstrap/js/jquery-1.11.2.js"></script>
+ 		<script src="bootstrap/js/jquery.js"></script>
     <script src="watable/jquery.watable.js" type="text/javascript" charset="utf-8"></script>
  </head>
   <body>

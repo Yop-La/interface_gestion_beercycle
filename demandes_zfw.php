@@ -16,6 +16,9 @@
     <meta charset="utf-8">
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap/css/tuto.css" rel="stylesheet">
+    <link rel='stylesheet' href='watable/watable.css'/>	
+    <script src="bootstrap/js/jquery.js"></script>
+    <script src="watable/jquery.watable.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div class="container">
@@ -30,6 +33,7 @@
 					<li class="active"><a href="#saisie_demande" data-toggle="tab">Saisie des demandes de produits de ZFW</a></li>
 					<li><a href="#modification_demande" data-toggle="tab">Modification des demandes de produits de ZFW</a></li>
 			</ul>
+			<!-- 1er onglet : saisie des demandes-->
 			<div class="tab-content">
 					<div class="tab-pane active" id="saisie_demande">		
 						<section class="row contenu">
@@ -81,8 +85,25 @@
 							</article>
 						</section>
 					</div>
+					<!-- 2ème onglet : modification des demandes-->
 					<div class="tab-pane" id="modification_demande">
-						<p> Espace de saisie des modifications des demandes </p>
+						<section class="row contenu">
+							<article class="col-lg-offset-1 col-lg-10">
+									<h3 class="row titre_page">
+										<div class="col-lg-offset-2 col-lg-8">
+											Liste des demandes de produits encore modifiables
+										</div>
+									</h3>
+									<div class="row">
+											<div id="table_dmd_modif" class="col-lg-offset-1"></div>
+									</div>
+									<div class="row">
+										<form class="well col-lg-offset-2 col-lg-8" method="post" action="traitement_bdd/saving_dmd_zfw.php">
+										</form>
+									</div>
+							</article>
+						</section>
+					</div>
 					</div>
 			</div>
 				
@@ -99,13 +120,12 @@
 						}
 			?>
   	</div>
-		<script src="bootstrap/js/jquery-1.11.2.js"></script> 
     <script src="bootstrap/js/bootstrap.min.js"></script>
 		<script>
 				$(function() {
 						// pour gérer le champ marque (lecture bbd + ajout champ modele et suppression du champ etat si changement)
 						$('#marque').change(function(){
-								$('.form-group:eq(3)').load('traitement_bdd/ajax_demandes_zfw.php',{marque:$('#marque').val(),type: 'marque'});
+								$('.form-group:eq(3)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{marque:$('#marque').val(),type: 'marque'});
 								$('#etat').remove();
 								$('[for="etat"]').remove();
 						});
@@ -174,7 +194,31 @@
 										champ.css('border-color','');
 								}
 						}
-				});
+
+						// script qui construit la table des demandes de produits encore modifiable
+								var waTable = $('#table_dmd_modif').WATable({	
+								rowClicked: function(data) {      //Fires when a row or anything within is clicked (Note. You need a column with the 'unique' property).
+										console.log('row clicked');   //data.event holds the original jQuery event.
+																									//data.row holds the underlying row you supplied.
+																									//data.index holds the index of row in rows array (Useful when you want to remove the row)
+																									//data.column holds the underlying column you supplied.
+																									//data.checked is true if row is checked. (Set to false/true to have it unchecked/checked)
+																									//'this' keyword holds the clicked element.
+
+
+								},
+						}).data('WATable');  //This step reaches into the html data property to get the actual WATable object. Important if you want a reference to it as we want here.
+						
+						// chargement des données dans la table avec ajax et jquery	
+            $.ajax({
+                url: 'traitement_bdd/ajax_demandes_zfw_onglet_2.php', // Le nom du fichier indiqué dans le formulaire
+                success: function(retourphp) { // Je récupère la réponse du fichier PHP
+									var json = eval('('+retourphp+')');
+									json.rows[0].libelle=' hkllkjl '+'</br></br>'+'hlklk';
+									waTable.setData(json);
+                }
+					});
+			});
 		</script>
   </body>
 </html>

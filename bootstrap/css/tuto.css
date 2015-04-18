@@ -54,7 +54,7 @@ padding-top: 50px;
 font-weight: bold;
 }
 
-/* pour centrer des blocs */
+/* pour centrer des blocs -> centre bouton validation formulaire */
 .centrer{
 display: block;
 margin-right: auto;
