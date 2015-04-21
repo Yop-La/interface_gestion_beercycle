@@ -29,7 +29,7 @@
 						{
 			?>
 
-			<aside class="contenu">
+			<section class="contenu">
 					<article>
 								<div class="row">
 										<h4 style="text-align:center" class="col-lg-offset-3 col-lg-6">Liste des demandes de produits non satisfaites</h4>
@@ -108,7 +108,7 @@
 						</div>
 					</article>
 
-			</aside>
+			</section>
 
 			<?php 
 						}else
