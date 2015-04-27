@@ -42,7 +42,7 @@
 										Espace de saisie des demandes de produits de ZFW
 									</h3>
 									<div class="row">
-										<form class="well col-lg-offset-2 col-lg-8" method="post" action="traitement_bdd/saving_dmd_zfw.php">
+										<form class="well col-lg-offset-2 col-lg-8" action="traitement_bdd/saving_dmd_zfw.php">
 												<legend>Origine de la demande</legend>
 												<div class="form-group">
 													<label for="canal_distri">Canal de distribution </label>
@@ -54,8 +54,13 @@
 																{
 																		echo '<option value="' . $valeur['libelle'] . '">' .  $valeur['libelle'] . '</option>';
 																}
+																$data->closeCursor();
 														?>
 													</select>
+												</div>
+												<div class="form-group">
+													<label for="prepayement"> Montant prépayement </label>
+													<input name="prepayement" id="prepayement" type="text" class="form-control">
 												</div>
 												<legend>Caractéristiques produit</legend>
 												<div class="form-group">
@@ -72,6 +77,7 @@
 															{
 																	echo '<option value="' . $valeur['marque'] . '">' .  $valeur['marque'] . '</option>';
 															}
+															$data->closeCursor();
 													?>
 													</select>
 												</div>
@@ -94,12 +100,14 @@
 								</div>
 							</h3>
 							<div class="row">
-								<div class="col-lg-offset-1 col-lg-10">
+								<div class="col-lg-12">
 									<table id="liste_demandes_non_traitees" class="display" width="100%" cellspacing="0">
 											<thead>
 													<tr>
 															<th>Canal de distribution</th>
+															<th>identifiant canal de distribution</th>
 															<th>Réf demande</th>
+															<th>Prépayement</th>
 															<th>date demande</th>
 															<th>date dernière maj</th>
 															<th>Utilisateur</th>
@@ -114,7 +122,9 @@
 											<tfoot>
 													<tr>
 															<th>Canal de distribution</th>
+															<th>identifiant canal de distribution</th>
 															<th>Réf demande</th>
+															<th>Prépayement</th>
 															<th>date demande</th>
 															<th>date dernière maj</th>
 															<th>Utilisateur</th>
@@ -166,7 +176,7 @@
 									<h4 class="centrer_texte">
 										Formulaire de mofication d'une demande	
 									</h4>
-									<form class="well" method="post" action="traitement_bdd/saving_modif_dmd_zfw.php">
+									<form class="well" action="traitement_bdd/saving_modif_dmd_zfw.php" >
 										<legend>Origine de la demande</legend>
 										<div class="form-group">
 											<label for="modif_canal_distri">Modification du canal de distribution </label>
@@ -178,8 +188,13 @@
 														{
 																echo '<option value="' . $valeur['libelle'] . '">' .  $valeur['libelle'] . '</option>';
 														}
+														$data->closeCursor();
 												?>
 											</select>
+										</div>
+										<div class="form-group">
+											<label for="modif_prepayement"> Modification du prépayement </label>
+											<input name="modif_prepayement" id="modif_prepayement" type="text" class="form-control">
 										</div>
 										<legend>Caractéristiques produit</legend>
 										<div class="form-group">
@@ -200,16 +215,8 @@
 											</select>
 										</div>
 										<div class="form-group">
-											<label for="modif_modele"> Modification du modele</label>
-											<select id="modif_modele" name="modif_modele" class="form-control">
-												<option value="" selected></option>
-											</select>
 										</div>
 										<div class="form-group">
-											<label for="modif_etat"> Modification de l'état </label>
-											<select id="modif_etat" name="modif_etat" class="form-control">
-												<option value="" selected></option>
-											</select>
 										</div>
 										<button type="submit" class="btn btn-danger centrer"> Submit </button>
 									</form>
@@ -243,25 +250,50 @@
 
 						// pour gérer le champ marque (lecture bbd + ajout champ modele et suppression du champ etat si changement)
 						$('#marque').change(function(){
-								$('.form-group:eq(3)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{marque:$('#marque').val(),type: 'marque',id_select: 'modele'});
+								$('.form-group:eq(4)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{marque:$('#marque').val(),type: 'marque',id_select: 'modele'},function(){
+										if($('#marque').val()=='')
+										{
+												$('#modele').remove();
+												$('[for="modele"]').remove();
+										}
+								});
 								$('#etat').remove();
 								$('[for="etat"]').remove();
 						});
 						//pour ajouter le champ etat (lecture bdd + ajout champ label si changement )
-						$('.form-group:eq(3)').on('change', "#modele", function(){
-								$('.form-group:eq(4)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{modele:$('#modele').val(),type: 'modele',id_select: 'etat'});
+						$('.form-group:eq(4)').on('change', "#modele", function(){
+								$('.form-group:eq(5)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{modele:$('#modele').val(),type: 'modele',id_select: 'etat'});
 						});
 						// partie vérification du formulaire
-						$('form:eq(0)').submit(function(){
+						$('form:eq(0)').submit(function(event){
+								event.preventDefault();
 								var canal_valide = check_select($('#canal_distri'));		
 								var marque_valide = check_select($('#marque'));		
 								var modele_valide = check_select($('#modele'));		
 								var etat_valide = check_select($('#etat'));
 								var quantite_valide = check_nombre_entier($('#quantite'));
-								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide)
+								var montant_prepayement = check_nombre($('#prepayement'));
+								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide && montant_prepayement)
 								{
 										var c = confirm("Etes vous sur de vouloir continuer ?");
-										return c;
+										if(c)
+										{
+												url = $('form:eq(0)').attr( "action" );
+												var a_poster=$('form:eq(0)').serialize();
+												var posting=$.post( url,a_poster);
+
+												posting.done(function(data){
+														// cela met à jour la DataTable
+														table_dmd_non_traitees.api().ajax.reload();
+														$('form:eq(0)')[0].reset();
+														$('#marque').trigger("change");
+												});
+												return true;
+										}
+										else
+										{
+												return false;
+										}
 								}
 								else
 								{
@@ -300,6 +332,20 @@
 										return true;
 								}
 						}
+						// fonction qui verifie que les quantités soient des nombres
+						function check_nombre(input){
+								if(!/^\d{1,2}.\d{1,2}$|\d{1,2}/.test(input.val()))
+								{
+										surligne(input,true);
+										return false;
+								}
+								else
+								{
+									
+										surligne(input,false);
+										return true;
+								}
+						}
 						//fonction qui modifie l'apparence du champ si mal rempli
 						function surligne(champ,erreur)
 						{
@@ -315,32 +361,39 @@
 
 	
 	/* 2ème onglet */
-
 			// variable qui permet de s'assurer que l'utilisateur a sélectionné une demande pour la modifier
 
 			var demande_selectionne=false;
 
+			// variable  qui va contenir la ref demande à modifier 
+			var ref_demande_selectionne=null;
+
 			// cela sert à remplir et à paramétrer la DataTable
-					table_dmd_non_traitees=$('#liste_demandes_non_traitees').dataTable( {
-        			"ajax": {
+					var table_dmd_non_traitees=$('#liste_demandes_non_traitees').dataTable( {
+        			ajax: {
 									"url": "traitement_bdd/ajax_demandes_zfw_onglet_2.php",
 									"type": "POST"
 							},
-							"lengthMenu": [[3, 5,10,15,-1], [3, 5, 10, 15,"Toutes"]],
-							"columnDefs": [
+							lengthMenu: [[3, 5,10,15,-1], [3, 5, 10, 15,"Toutes"]],
+							columnDefs: [
 									{
-											"targets": [ 5 ],
+											"targets": [ 1 ],
 											"visible": false,
 											"searchable": false
 									},
 									{
-											"targets": [ 6 ],
+											"targets": [ 7 ],
+											"visible": false,
+											"searchable": false
+									},
+									{
+											"targets": [ 8 ],
 											"visible": false,
 									}
 							],
 							responsive: true
     			} );
-	
+
 		// permet de remplir le tableau infos sur la demande sélectionnée et le formulaire lorsqu'on clique sur une ligne du tableau des demandes
 				$('#liste_demandes_non_traitees tbody').on('click', 'tr', function () {
 						var cells =$('td', this);
@@ -351,9 +404,9 @@
 						//cela met à jour le tableau " infos sur la demande sélectionnée
 						var data_tableau_infos_demande = [];
 						data_tableau_infos_demande.push(cells.eq(1).text());	
-						data_tableau_infos_demande.push(cells.eq(2).text());	
 						data_tableau_infos_demande.push(cells.eq(3).text());	
 						data_tableau_infos_demande.push(cells.eq(4).text());	
+						data_tableau_infos_demande.push(cells.eq(5).text());	
 						$('tbody:eq(1) th:odd').each(function(index){
 								$(this).html(data_tableau_infos_demande[index]);
 						});
@@ -361,15 +414,18 @@
 						var ligne = table_dmd_non_traitees.fnGetData( this );
 						demande_selectionne=true;
 						$('#modif_canal_distri').val(cells.eq(0).text());
-						$('#modif_quantite').val(cells.eq(7).text());
-						$('#modif_marque').val(ligne[6]);
+						$('#modif_prepayement').val(cells.eq(2).text());
+						$('#modif_quantite').val(cells.eq(8).text());
+						$('#modif_marque').val(ligne[8]);
 						// déclenche l'événement "change" sur le champ marque afin de mettre à jour les champs modèle et état qui en dépendent
-						$('#modif_marque').trigger("change",[cells.eq(5).text(),cells.eq(6).text()]);
+						$('#modif_marque').trigger("change",[cells.eq(6).text(),cells.eq(7).text()]);
+						// enregistre les données nécessaires à la maj de cette demande : ref_produit et ref_canal_distrib
+						ref_demande_selectionne=ligne[2];
 
 				});	
 				// lorsque qu'on change le champ marque, cela insère le champ modèle et enlève le champ etat et label
 						$('#modif_marque').change(function(event,modele,etat){
-								$('.form-group:eq(8)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
+								$('.form-group:eq(10)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
 										{marque:$('#modif_marque').val(),type: 'marque',id_select: 'modif_modele'},
 										function(){
 												if(modele!=undefined)
@@ -377,13 +433,18 @@
 														$('#modif_modele').val(modele);
 														$('#modif_modele').trigger("change",etat);
 												}
+												if($('#modif_marque').val()=='')
+												{
+														$('#modif_modele').remove();
+														$('[for="modif_modele"]').remove();
+												}
 										});
 								$('#modif_etat').remove();
 								$('[for="modif_etat"]').remove();
 						});
 						//pour ajouter un évènement au champ modèle après construction du dom: lorqu'on change le champ modèle cela ajoute le champ état
-						$('.form-group:eq(8)').on('change', "#modif_modele", function(event,etat){
-								$('.form-group:eq(9)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
+						$('.form-group:eq(10)').on('change', "#modif_modele", function(event,etat){
+								$('.form-group:eq(11)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
 										{modele:$('#modif_modele').val(),type: 'modele',id_select: 'modif_etat'},
 										function(){
 												if(etat!=undefined)
@@ -402,19 +463,42 @@
 
 
 						});
-						// partie vérification du formulaire
-						$('form:eq(1)').submit(function(){
+						// partie vérification et soumission du formulaire
+						$('form:eq(1)').submit(function(event){
+								event.preventDefault();
+								//vérification des champs
 								var canal_valide = check_select($('#modif_canal_distri'));
 								var marque_valide = check_select($('#modif_marque'));		
 								var modele_valide = check_select($('#modif_modele'));		
 								var etat_valide = check_select($('#modif_etat'));
 								var quantite_valide = check_nombre_entier($('#modif_quantite'));
-								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide)
+								var montant_prepayement = check_nombre($('#modif_prepayement'));
+								
+								// si tous les champs sont correctement remplis
+								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide && montant_prepayement)
 								{
 										if(demande_selectionne)
 										{
 												var c = confirm("Etes vous sur de vouloir continuer ?");
-												return c;
+												if(c)
+												{
+														url = $('form:eq(1)').attr( "action" );
+														var a_poster=$('form:eq(1)').serialize()+"&ref_demande="+ref_demande_selectionne;
+														var posting=$.post( url,a_poster);
+
+														posting.done(function(data){
+																// cela met à jour la DataTable
+																table_dmd_non_traitees.api().ajax.reload();
+																$('form:eq(1)')[0].reset();
+																$('#modif_marque').trigger("change");
+																demande_selectionne=false;
+														});
+														return true;
+												}
+												else
+												{
+														return false;
+												}
 										}
 										else
 										{

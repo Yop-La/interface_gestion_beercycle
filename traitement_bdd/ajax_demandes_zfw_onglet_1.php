@@ -16,7 +16,11 @@
 					{
 							$data = $bdd->prepare('SELECT distinct modele FROM produit where marque = ? order by modele');
 							$data->execute(array($_POST['marque']));
-							echo '<label for="'.$_POST['id_select'].'"> Modèle </label>';
+							echo '<label for="'.$_POST['id_select'].'">'; 
+							if($_POST['id_select']=='modif_modele')
+								echo 'Modification modèle </label>';
+							else
+								echo 'Modèle </label>';
 							echo '<select id="'.$_POST['id_select'].'" name="'.$_POST['id_select'].'" class="form-control">';
 							echo '<option value="" selected></option>';
 
@@ -31,7 +35,12 @@
 					{
 							$data = $bdd->prepare('SELECT distinct commentaire FROM produit where modele = ? order by etat');
 							$data->execute(array($_POST['modele']));
-							echo '<label for="'.$_POST['id_select'].'"> Etat </label> <select id="'.$_POST['id_select'].'" name="'.$_POST['id_select'].'" class="form-control">';
+							echo '<label for="'.$_POST['id_select'].'">';
+							if($_POST['id_select']=='modif_etat')
+								echo 'Modification état </label>';
+							else
+								echo ' Etat </label>';
+							echo '<select id="'.$_POST['id_select'].'" name="'.$_POST['id_select'].'" class="form-control">';
 							echo '<option value="" selected></option>';
 
 							while ($valeur = $data->fetch())
