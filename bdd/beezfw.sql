@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 28, 2015 at 12:30 
+-- Generation Time: Apr 29, 2015 at 12:16 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -602,28 +602,24 @@ INSERT INTO `cmde_client` (`ref_cmdec`, `ref_produit`, `ref_client`, `ref_canal_
 
 CREATE TABLE IF NOT EXISTS `cmde_fournisseur` (
 `ref_cmdef` int(11) NOT NULL,
-  `ref_fournisseur` varchar(10) DEFAULT NULL,
+  `ref_fournisseur` int(11) DEFAULT NULL,
   `date_cmde` datetime DEFAULT NULL,
   `statut` varchar(25) DEFAULT NULL,
   `ref_cmde_externe` varchar(50) DEFAULT NULL,
   `commentaire` varchar(100) DEFAULT NULL,
   `user_id` varchar(10) DEFAULT NULL,
   `date_heure_maj` datetime DEFAULT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `cmde_fournisseur`
 --
 
 INSERT INTO `cmde_fournisseur` (`ref_cmdef`, `ref_fournisseur`, `date_cmde`, `statut`, `ref_cmde_externe`, `commentaire`, `user_id`, `date_heure_maj`) VALUES
-(7, '1', '2015-04-27 14:59:45', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 14:59:45'),
-(4, '1', '2015-04-27 14:56:43', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 14:56:43'),
-(5, '1', '2015-04-27 14:58:07', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 14:58:07'),
-(6, '1', '2015-04-27 14:58:36', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 14:58:36'),
-(8, '1', '2015-04-27 15:29:47', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 15:29:47'),
-(9, '1', '2015-04-27 15:30:58', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 15:30:58'),
-(10, '1', '2015-04-27 16:42:23', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 16:42:23'),
-(11, '3', '2015-04-27 16:43:06', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-27 16:43:06');
+(15, 1, '2015-04-28 22:18:56', 'saisie', 'ref_bidon_3_sans_demande', '', 'bidon', '2015-04-28 22:18:56'),
+(12, 1, '2015-04-28 16:17:37', 'saisie', 'ref_bidon_1', '', 'bidon', '2015-04-28 16:17:37'),
+(13, 2, '2015-04-28 16:21:20', 'saisie', 'ref_bidon_2_sans_demande', '', 'bidon', '2015-04-28 16:21:20'),
+(14, 3, '2015-04-28 16:23:56', 'saisie', 'ref_bidon_3', '', 'bidon', '2015-04-28 16:23:56');
 
 -- --------------------------------------------------------
 
@@ -633,7 +629,7 @@ INSERT INTO `cmde_fournisseur` (`ref_cmdef`, `ref_fournisseur`, `date_cmde`, `st
 
 CREATE TABLE IF NOT EXISTS `demande_zfw` (
 `ref_dde_zfw` int(11) NOT NULL,
-  `ref_canal_distrib` varchar(10) DEFAULT NULL,
+  `ref_canal_distrib` int(11) DEFAULT NULL,
   `ref_produit` varchar(25) DEFAULT NULL,
   `date_demande` datetime DEFAULT NULL,
   `qte_ddee` int(11) DEFAULT '0',
@@ -647,8 +643,8 @@ CREATE TABLE IF NOT EXISTS `demande_zfw` (
 --
 
 INSERT INTO `demande_zfw` (`ref_dde_zfw`, `ref_canal_distrib`, `ref_produit`, `date_demande`, `qte_ddee`, `qte_cmdee`, `user_id`, `date_dern_maj`) VALUES
-(1, '1', 'TEAPL1016-CNF', '2015-04-27 23:42:14', 50, 0, 'bidon', '2015-04-28 00:27:12'),
-(2, '3', 'TEBBL1000-OCC', '2015-04-27 23:42:39', 8, 0, 'bidon', '2015-04-27 23:42:39');
+(1, 1, 'TEAPL1011-CNF', '2015-04-28 09:49:33', 45, 45, 'bidon', '2015-04-28 09:49:33'),
+(2, 1, 'TEAPL1000-OCC', '2015-04-28 10:00:29', 80, 80, 'bidon', '2015-04-28 10:01:37');
 
 -- --------------------------------------------------------
 
@@ -872,9 +868,9 @@ CREATE TABLE IF NOT EXISTS `imei_vente` (
 
 CREATE TABLE IF NOT EXISTS `lieu_stockage` (
 `ref_lieu_stockage` int(11) NOT NULL,
-  `libellé` varchar(50) DEFAULT NULL,
+  `libelle` varchar(50) DEFAULT NULL,
   `pays` varchar(25) DEFAULT NULL,
-  `région` varchar(25) DEFAULT NULL,
+  `region` varchar(25) DEFAULT NULL,
   `ville` varchar(25) DEFAULT NULL,
   `adresse` varchar(100) DEFAULT NULL,
   `commentaire` varchar(100) DEFAULT NULL,
@@ -886,7 +882,7 @@ CREATE TABLE IF NOT EXISTS `lieu_stockage` (
 -- Dumping data for table `lieu_stockage`
 --
 
-INSERT INTO `lieu_stockage` (`ref_lieu_stockage`, `libellé`, `pays`, `région`, `ville`, `adresse`, `commentaire`, `user_id`, `date_heure_maj`) VALUES
+INSERT INTO `lieu_stockage` (`ref_lieu_stockage`, `libelle`, `pays`, `region`, `ville`, `adresse`, `commentaire`, `user_id`, `date_heure_maj`) VALUES
 (1, 'Boutique Kinshasa', 'RDC', 'Kin', 'Kinshasa', NULL, NULL, NULL, NULL),
 (2, 'Entrepôt Brazzaville', 'Congo', 'Capitale', 'Brazzaville', NULL, NULL, NULL, NULL);
 
@@ -898,27 +894,24 @@ INSERT INTO `lieu_stockage` (`ref_lieu_stockage`, `libellé`, `pays`, `région`,
 
 CREATE TABLE IF NOT EXISTS `ligne_commande_origine` (
 `ref_l_cmdef` int(11) NOT NULL,
-  `ref_cmdef` varchar(10) DEFAULT NULL,
-  `ref_demande_zfw` varchar(10) DEFAULT NULL,
+  `ref_cmdef` int(11) DEFAULT NULL,
+  `ref_demande_zfw` int(11) DEFAULT NULL,
   `ref_produit` varchar(25) DEFAULT NULL,
   `qte_cmdee` int(11) DEFAULT '0',
   `prix_unitaire` double DEFAULT '0',
   `code_devise` varchar(3) DEFAULT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `ligne_commande_origine`
 --
 
 INSERT INTO `ligne_commande_origine` (`ref_l_cmdef`, `ref_cmdef`, `ref_demande_zfw`, `ref_produit`, `qte_cmdee`, `prix_unitaire`, `code_devise`) VALUES
-(2, '7', '13', 'TEBBL1000-OCC', 10, 45, 'FCO'),
-(3, '7', '33', 'TEAPL1010-OCC', 8, 12, 'XAF'),
-(4, '7', '22', 'TEAPL1007-OCC', 1, 4, 'FCO'),
-(5, '8', '13', 'TEBBL1000-OCC', 10, 45, 'FCO'),
-(6, '9', '13', 'TEBBL1000-OCC', 10, 45, 'USD'),
-(7, '9', '33', 'TEAPL1010-OCC', 8, 45, 'USD'),
-(8, '10', '13', 'TEBBL1000-OCC', 10, 15.5, 'USD'),
-(9, '11', '14', 'TESMG1008-OCC', 1, 15, 'FCO');
+(1, 12, 1, 'TEAPL1011-CNF', 45, 52, 'USD'),
+(2, 13, 0, 'TEBBL1000-OCC', 8, 45, 'USD'),
+(3, 13, 0, 'TEAPL1006-OCC', 80, 30, 'EUR'),
+(4, 14, 2, 'TEAPL1000-OCC', 80, 87, 'FCO'),
+(5, 15, 0, 'TEAPL1000-CNF', 1, 100, 'USD');
 
 -- --------------------------------------------------------
 
@@ -928,14 +921,15 @@ INSERT INTO `ligne_commande_origine` (`ref_l_cmdef`, `ref_cmdef`, `ref_demande_z
 
 CREATE TABLE IF NOT EXISTS `ligne_commande_retour` (
 `ref_l_cmdef_ret` int(11) NOT NULL,
-  `ref_l_cmdef` varchar(10) DEFAULT NULL,
+  `ref_l_cmdef` int(11) DEFAULT NULL,
   `origine_ligne` varchar(5) DEFAULT NULL,
   `ref_produit` varchar(25) DEFAULT NULL,
-  `Qté_reçue` int(11) DEFAULT '0',
+  `qte_reçue` int(11) DEFAULT '0',
   `date_validation` datetime DEFAULT NULL,
-  `Flag_ligne_validée` varchar(1) DEFAULT NULL,
+  `flag_ligne_validee` varchar(1) DEFAULT NULL,
   `user_id` varchar(10) DEFAULT NULL,
-  `date_heure_maj` datetime DEFAULT NULL
+  `date_heure_maj` datetime DEFAULT NULL,
+  `ref_l_expedition_bee` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1013,15 +1007,7 @@ CREATE TABLE IF NOT EXISTS `paiement_dde_zfw` (
   `montant_regle` float NOT NULL,
   `user_id` varchar(10) NOT NULL,
   `date_heure_maj` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `paiement_dde_zfw`
---
-
-INSERT INTO `paiement_dde_zfw` (`ref_paiement_dde_zfw`, `ref_dde_zfw`, `date_paiement`, `montant_regle`, `user_id`, `date_heure_maj`) VALUES
-(1, 1, '2015-04-27 00:00:00', 1, 'bidon', '2015-04-28 00:27:12'),
-(2, 2, '2015-04-27 00:00:00', 78, 'bidon', '2015-04-27 00:00:00');
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1071,7 +1057,7 @@ CREATE TABLE IF NOT EXISTS `position_zfw` (
   `date_archivage` datetime NOT NULL,
   `ref_lieu_stockage` varchar(10) NOT NULL,
   `ref_produit` varchar(25) NOT NULL,
-  `qté` int(11) DEFAULT '0',
+  `qte` int(11) DEFAULT '0',
   `user_id` varchar(10) DEFAULT NULL,
   `date_heure_maj` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -1523,7 +1509,7 @@ MODIFY `ref_cmdec` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=235;
 -- AUTO_INCREMENT for table `cmde_fournisseur`
 --
 ALTER TABLE `cmde_fournisseur`
-MODIFY `ref_cmdef` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
+MODIFY `ref_cmdef` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `demande_zfw`
 --
@@ -1568,7 +1554,7 @@ MODIFY `ref_lieu_stockage` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 -- AUTO_INCREMENT for table `ligne_commande_origine`
 --
 ALTER TABLE `ligne_commande_origine`
-MODIFY `ref_l_cmdef` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
+MODIFY `ref_l_cmdef` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `ligne_commande_retour`
 --
@@ -1598,7 +1584,7 @@ MODIFY `ref_paiement_client` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT for table `paiement_dde_zfw`
 --
 ALTER TABLE `paiement_dde_zfw`
-MODIFY `ref_paiement_dde_zfw` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+MODIFY `ref_paiement_dde_zfw` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `paiement_zfw`
 --
