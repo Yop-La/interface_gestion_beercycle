@@ -49,7 +49,6 @@
 						echo '"'.$row['libelle'].'",';
 						echo '"'.$row['canal_distri'].'",';// pas afficher
 						echo '"'.$row['ref_dde_zfw'].'",';
-						echo '"'.$ref_dde_zfw_to_prepaiements[$row['ref_dde_zfw']].' €",';
 						echo '"'.$row['date_demande'].'",';
 						echo '"'.$row['date_dern_maj'].'",';
 						echo '"'.$row['user_saisie'].'",';

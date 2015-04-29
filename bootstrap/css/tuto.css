@@ -68,8 +68,17 @@ padding-top : 70px;
 padding-bottom: 100px;
 }
 
+/* pour centrer du texte */
 .centrer_texte{
 text-align: center;
 }
 
-
+/* pour mettre le fond en gris léger */
+.white{
+background-color: white;
+}
+/* pour aligner deux éléments dans la même ligne*/
+.vertical-align {
+    display: flex;
+    align-items: center;
+}

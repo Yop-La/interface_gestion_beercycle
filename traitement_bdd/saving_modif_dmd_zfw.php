@@ -31,13 +31,6 @@ if($_SESSION['identification'])
 			'ref_dde_zfw' => $_POST['ref_demande']
 			));
 		$req->closeCursor();
-		// on met à jour le prépaiement associée à cette demande
-		$req = $bdd->prepare('UPDATE paiement_dde_zfw SET montant_regle = :montant_regle, user_id = "bidon", date_heure_maj = NOW() WHERE ref_dde_zfw = :ref_dde_zfw');
-		$req->execute(array(
-			'montant_regle' => $_POST['modif_prepayement'],
-			'ref_dde_zfw' => $_POST['ref_demande']
-			))  or die('Error, insert query failed');
-		$req->closeCursor();
 	
 }
 else

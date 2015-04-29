@@ -135,7 +135,8 @@ if($_SESSION['identification'])
 						'ref_dde_zfw' => $ref_dmd_zfw
 						));
 					$req->closeCursor();
-
+		// on redirige vers l'écran de saisie des commandes
+		echo header('Location: ../saisie_commandes_fournisseurs.php');
 		}
 		else
 		{

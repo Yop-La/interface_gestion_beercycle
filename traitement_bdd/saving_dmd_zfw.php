@@ -36,13 +36,6 @@ if($_SESSION['identification'])
 		$ref_dmd_zfw=$bdd->lastInsertId();
 		$req->closeCursor();
 
-		// on écrit le prépayement dans la table paiement_dde_zfw
-		$req=$bdd->prepare('INSERT INTO paiement_dde_zfw (ref_dde_zfw, date_paiement, montant_regle, user_id, date_heure_maj) VALUES (:ref_dde_zfw, NOW(), :montant_regle, \'bidon\', NOW())') or die(print_r($bdd->errorInfo()));
-		$req->execute(array(
-			'ref_dde_zfw' => $ref_dmd_zfw, 
-			'montant_regle' => $_POST['prepayement']
-			));
-		$req->closeCursor();
 
 
 }

@@ -58,10 +58,6 @@
 														?>
 													</select>
 												</div>
-												<div class="form-group">
-													<label for="prepayement"> Montant prépayement </label>
-													<input name="prepayement" id="prepayement" type="text" class="form-control">
-												</div>
 												<legend>Caractéristiques produit</legend>
 												<div class="form-group">
 													<label for="quantite"> Quantite </label>
@@ -107,7 +103,6 @@
 															<th>Canal de distribution</th>
 															<th>identifiant canal de distribution</th>
 															<th>Réf demande</th>
-															<th>Prépayement</th>
 															<th>date demande</th>
 															<th>date dernière maj</th>
 															<th>Utilisateur</th>
@@ -124,7 +119,6 @@
 															<th>Canal de distribution</th>
 															<th>identifiant canal de distribution</th>
 															<th>Réf demande</th>
-															<th>Prépayement</th>
 															<th>date demande</th>
 															<th>date dernière maj</th>
 															<th>Utilisateur</th>
@@ -192,10 +186,6 @@
 												?>
 											</select>
 										</div>
-										<div class="form-group">
-											<label for="modif_prepayement"> Modification du prépayement </label>
-											<input name="modif_prepayement" id="modif_prepayement" type="text" class="form-control">
-										</div>
 										<legend>Caractéristiques produit</legend>
 										<div class="form-group">
 											<label for="modif_quantite"> Modification de la quantite </label>
@@ -250,7 +240,7 @@
 
 						// pour gérer le champ marque (lecture bbd + ajout champ modele et suppression du champ etat si changement)
 						$('#marque').change(function(){
-								$('.form-group:eq(4)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{marque:$('#marque').val(),type: 'marque',id_select: 'modele'},function(){
+								$('.form-group:eq(3)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{marque:$('#marque').val(),type: 'marque',id_select: 'modele'},function(){
 										if($('#marque').val()=='')
 										{
 												$('#modele').remove();
@@ -261,8 +251,8 @@
 								$('[for="etat"]').remove();
 						});
 						//pour ajouter le champ etat (lecture bdd + ajout champ label si changement )
-						$('.form-group:eq(4)').on('change', "#modele", function(){
-								$('.form-group:eq(5)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{modele:$('#modele').val(),type: 'modele',id_select: 'etat'});
+						$('.form-group:eq(3)').on('change', "#modele", function(){
+								$('.form-group:eq(4)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',{modele:$('#modele').val(),type: 'modele',id_select: 'etat'});
 						});
 						// partie vérification du formulaire
 						$('form:eq(0)').submit(function(event){
@@ -272,8 +262,7 @@
 								var modele_valide = check_select($('#modele'));		
 								var etat_valide = check_select($('#etat'));
 								var quantite_valide = check_nombre_entier($('#quantite'));
-								var montant_prepayement = check_nombre($('#prepayement'));
-								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide && montant_prepayement)
+								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide )
 								{
 										var c = confirm("Etes vous sur de vouloir continuer ?");
 										if(c)
@@ -382,12 +371,12 @@
 											"searchable": false
 									},
 									{
-											"targets": [ 7 ],
+											"targets": [ 6 ],
 											"visible": false,
 											"searchable": false
 									},
 									{
-											"targets": [ 8 ],
+											"targets": [ 7 ],
 											"visible": false,
 									}
 							],
@@ -404,9 +393,9 @@
 						//cela met à jour le tableau " infos sur la demande sélectionnée
 						var data_tableau_infos_demande = [];
 						data_tableau_infos_demande.push(cells.eq(1).text());	
+						data_tableau_infos_demande.push(cells.eq(2).text());	
 						data_tableau_infos_demande.push(cells.eq(3).text());	
 						data_tableau_infos_demande.push(cells.eq(4).text());	
-						data_tableau_infos_demande.push(cells.eq(5).text());	
 						$('tbody:eq(1) th:odd').each(function(index){
 								$(this).html(data_tableau_infos_demande[index]);
 						});
@@ -414,18 +403,17 @@
 						var ligne = table_dmd_non_traitees.fnGetData( this );
 						demande_selectionne=true;
 						$('#modif_canal_distri').val(cells.eq(0).text());
-						$('#modif_prepayement').val(cells.eq(2).text());
-						$('#modif_quantite').val(cells.eq(8).text());
-						$('#modif_marque').val(ligne[8]);
+						$('#modif_quantite').val(cells.eq(7).text());
+						$('#modif_marque').val(ligne[7]);
 						// déclenche l'événement "change" sur le champ marque afin de mettre à jour les champs modèle et état qui en dépendent
-						$('#modif_marque').trigger("change",[cells.eq(6).text(),cells.eq(7).text()]);
+						$('#modif_marque').trigger("change",[cells.eq(5).text(),cells.eq(6).text()]);
 						// enregistre les données nécessaires à la maj de cette demande : ref_produit et ref_canal_distrib
 						ref_demande_selectionne=ligne[2];
 
 				});	
 				// lorsque qu'on change le champ marque, cela insère le champ modèle et enlève le champ etat et label
 						$('#modif_marque').change(function(event,modele,etat){
-								$('.form-group:eq(10)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
+								$('.form-group:eq(8)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
 										{marque:$('#modif_marque').val(),type: 'marque',id_select: 'modif_modele'},
 										function(){
 												if(modele!=undefined)
@@ -443,8 +431,8 @@
 								$('[for="modif_etat"]').remove();
 						});
 						//pour ajouter un évènement au champ modèle après construction du dom: lorqu'on change le champ modèle cela ajoute le champ état
-						$('.form-group:eq(10)').on('change', "#modif_modele", function(event,etat){
-								$('.form-group:eq(11)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
+						$('.form-group:eq(8)').on('change', "#modif_modele", function(event,etat){
+								$('.form-group:eq(9)').load('traitement_bdd/ajax_demandes_zfw_onglet_1.php',
 										{modele:$('#modif_modele').val(),type: 'modele',id_select: 'modif_etat'},
 										function(){
 												if(etat!=undefined)
@@ -472,10 +460,9 @@
 								var modele_valide = check_select($('#modif_modele'));		
 								var etat_valide = check_select($('#modif_etat'));
 								var quantite_valide = check_nombre_entier($('#modif_quantite'));
-								var montant_prepayement = check_nombre($('#modif_prepayement'));
 								
 								// si tous les champs sont correctement remplis
-								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide && montant_prepayement)
+								if(marque_valide && modele_valide && canal_valide && etat_valide && quantite_valide )
 								{
 										if(demande_selectionne)
 										{
