@@ -11,6 +11,7 @@
 	<html>
   <head>
 		<title> Validation des commandes par ZFW</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" href="css_form_validation/screen.css">
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap/css/tuto.css" rel="stylesheet">
@@ -38,28 +39,55 @@
 					<!-- 1er onglet validation des commandes envoyées par les fournisseurs directement -->
 					<div class="tab-pane active" id="fournisseurs">
 						<section class="contenu">
-							<article class="contenu">
+							<article>
 								<div class="row">
 									<div class="col-lg-2 col-lg-offset-1">
 										<table id="liste_ref_externe_fourni" class="display" width="100%" cellspacing="0">
 												<thead>
 														<tr>
 																<th>Références externes</th>
+																<th>Emetteur</th>
+																<th>Suite à demande</th>
 														</tr>
 												</thead>
 								 
 												<tfoot>
 														<tr>
 																<th>Références externes</th>
+																<th>Emetteur</th>
+																<th>Suite à demande</th>
 														</tr>
 												</tfoot>
 										</table>
 									</div>
 									<!-- formulaire de validation des commandes fournisseurs -->
-									<form class="col-lg-offset-1 col-lg-7  well">
-										
+									<form class="col-lg-offset-1 col-lg-7  well">	
+										<div class="row vertical-align">
+											<div class="col-lg-10 col-lg-offset-1">
+												<h1 class="Bold ">
+													Formulaire de réception des commandes
+												</h1>
+											</div>
+										</div>
+										<legend>
+												Entête de la commande
+										</legend>
+										<div class="form-group row">
+											<div class="col-lg-3 col-lg-offset-2">
+												<label for="fourn_ref_externe">Référence externe</label>
+												<input type="text" name="fourn_ref_externe" id="fourn_ref_externe" class="form-control" disabled="disabled" required/>
+											</div>
+											<div class="col-lg-2">
+												<label for="fourn_expediteur">Expéditeur</label>
+												<input type="text" name="fourn_expediteur" id="fourn_expediteur" class="form-control" disabled="disabled" required/>
+											</div>
+											<div class="col-lg-3">
+												<label for="fourn_expediteur">Référence demande</label>
+												<input type="text" name="fourn_ref_demande" id="fourn_ref_demande" class="form-control" disabled="disabled" required/>
+											</div>
+										</div>
 										<!-- 1ère ligne de la commande -->
-										<div class="row" id="ligne_cmde_1">
+										<div class="row" id="ligne_cmde_fourn_1">
 											<div class="row vertical-align">
 												<div class="col-lg-6 col-lg-offset-4">
 													<h3 class="Bold ">
@@ -79,8 +107,8 @@
 											<div class="form-group row">
 												<!-- champ marque -->
 												<div class="col-lg-3">
-													<label for="marque1">Marque</label>
-													<select name="marque1" id="marque1" class="form-control" required>
+													<label for="fourn_marque1">Marque</label>
+													<select name="fourn_marque1" id="fourn_marque1" class="form-control" required>
 														<option value="" selected></option>
 														<?php
 																$data = $bdd->query('SELECT DISTINCT marque  FROM produit');
@@ -94,8 +122,8 @@
 												</div>
 												<!-- champ modèle -->
 												<div class="col-lg-8 col-lg-offset-1">
-													<label for="modele1">Modèle</label>
-													<select name="modele1" id="modele1" class="form-control" required>
+													<label for="fourn_modele1">Modèle</label>
+													<select name="fourn_modele1" id="fourn_modele1" class="form-control" required>
 														<option selected="selected"></option>    
 													</select>
 												</div>
@@ -103,8 +131,8 @@
 											<div class="form-group row">
 												<div class="col-lg-offset-1 col-lg-10">
 													<!-- champ état -->
-													<label for="etat1">Etat</label>
-													<select name="etat1" id="etat1" class="form-control" required>
+													<label for="fourn_etat1">Etat</label>
+													<select name="fourn_etat1" id="fourn_etat1" class="form-control" required>
 														<option selected="selected"></option>    
 													</select>
 												</div>
@@ -112,8 +140,8 @@
 											<div class="form-group row">
 												<div class="col-lg-offset-4 col-lg-4">
 													<!-- champ quantité reçue -->
-													<label for="qte_cmde1">Quantitée reçue</label>
-													<input type="text" name="qte_recue1" id="qte_recue1" class="form-control" required/>
+													<label for="fourn_qte_recue1">Quantitée reçue</label>
+													<input type="text" name="fourn_qte_recue1" id="fourn_qte_recue1" class="form-control" required/>
 												</div>
 											</div>
 											<!-- répartition des produits dans les stocks -->
@@ -124,8 +152,8 @@
 
 												<div class="col-lg-4 col-lg-offset-2">
 													<!-- champ lieu_stockage -->
-													<label for="ref_lieu_stockage1_1">Lieu de stockage</label>
-													<select name="ref_lieu_stockage1_1" id="ref_lieu_stockage1_1" class="form-control" required/>
+													<label for="fourn_ref_lieu_stockage1_1">Lieu de stockage</label>
+													<select name="fourn_ref_lieu_stockage1_1" id="fourn_ref_lieu_stockage1_1" class="form-control" required/>
 														<option value="" selected></option>
 														<?php
 																$data = $bdd->query('SELECT libelle, ref_lieu_stockage FROM lieu_stockage');
@@ -139,8 +167,8 @@
 												</div>			
 												<div class="col-lg-4">
 													<!-- champ quantité pour le lieu de stockage choisi -->
-													<label for="qte_lieu_stockage1_1">Quantité attribué</label>
-													<input type="text" name="qte_lieu_stockage1_1" id="qte_lieu_stockage1_1" class="form-control" required/>
+													<label for="fourn_qte_lieu_stockage1_1">Quantité attribué</label>
+													<input type="text" name="fourn_qte_lieu_stockage1_1" id="fourn_qte_lieu_stockage1_1" class="form-control" required/>
 												</div>
 												<div class="col-lg-2">
 													<button type="button" class="btn  btn-primary form-control">
@@ -148,7 +176,7 @@
 													</button>
 												</div>
 											</div>
-											<div class="col-lg-offset-5 col-lg-2 form-group" id="ajout_repartition_four">
+											<div class="col-lg-offset-5 col-lg-2 form-group" id="ajout_repartition_four1">
 													<button type="button" class="btn  btn-default form-control">
 														Ajouter
 													</button>
@@ -160,7 +188,7 @@
 										</br>
 										<div class="row form-group" id="commandes_formulaires">
 											<div class="col-lg-3 col-lg-offset-3">
-												<button class="btn btn-default form-control" type="button" >Ajouter</button>
+												<button class="btn btn-default form-control ajout_ligne" type="button" >Ajouter</button>
 											</div>
 											<div class="col-lg-3">
 												<button type="submit" class="btn btn-danger form-control" > Valider </button>
@@ -191,18 +219,115 @@
 		<script>
 
 				$(function() {
-// 1er onglet ------- gestion de la réception des commandes envoyées directement par le fournisseur 
+// gestion de la réception des commandes envoyées directement par le fournisseur et par bee 
 		// cela sert à remplir et à paramétrer la DataTable
-						var table_ref_externe_fourni=$('#liste_ref_externe_fourni').dataTable( {
+						var table_ref_externe = $('#liste_ref_externe_fourni').dataTable( {
 								ajax: {
 										"url": "traitement_bdd/reception_commande_remplissage_table_ref_externe_fourni.php",
 										"type": "POST"
+
 								},
-								lengthMenu: [[3, 5,10,15,-1], [3, 5, 10, 15,"Toutes"]],
+								lengthMenu: [[5,10,15,-1], [5, 10, 15,"Toutes"]],
+								columnDefs: [
+										{
+												"targets": [ 1 ],
+												"visible": false,
+												"searchable": true
+										},									
+										{
+												"targets": [ 2 ],
+												"visible": false,
+												"searchable": true
+										}
+								],
 								responsive: true
 						});
-				});
 
+		// pré-remplissage dur formulaire lorsque que l'on clique sur une ligne du formulaire
+					$('#liste_ref_externe_fourni').on('click', 'tr', function () {
+						var cells =$('td', this);
+						var ligne = table_ref_externe.fnGetData( this );
+						var ref_externe=ligne[0];
+						var expediteur=ligne[1];
+						var ref_demande=ligne[2];
+						// on remplit l'entête du formulaire
+						$('#fourn_ref_externe').val(ref_externe);
+						$('#fourn_expediteur').val(expediteur);
+						$('#fourn_ref_demande').val(ref_demande);
+	
+						// on récupère toutes les données nécessaire au remplissage du formulaire
+						$.ajax({
+									dataType: "json",
+									url: 'traitement_bdd/reception_commandes_zfw_chargement_donnees_formulaire.php',
+									type: "POST",
+									data: { ref_externe: ref_externe, expediteur: expediteur, ref_demande: ref_demande }, 
+									success: function(donnees_cmde) {
+											nbre_tot_row=donnees_cmde.length;
+											// on doit connaître l'état du formulaire ou le mettre dans un état défini avant d'y insérer les données
+											// on actionne tous les boutons supprimer du formulaire
+											$('[class*="btn-primary"]').trigger('click');
+											for(indice_row=0;indice_row<nbre_tot_row;indice_row++)
+											{
+													donnees_ligne=donnees_cmde[indice_row];
+													// à chaque nouvelle ligne de commande, on ajoute une ligne au formulaire
+													$('[class*="ajout_ligne"]').trigger('click');
+													// on définie les id de la ligne et des champs dans lesquelles on va insérer les données
+													var id_ligne="#ligne_cmde_fourn_"+(indice_row+1);
+													var id_marque="#fourn_marque"+(indice_row+1);
+													var id_modele="#fourn_modele"+(indice_row+1);
+													var id_etat="#fourn_etat"+(indice_row+1);
+													var id_qte_recue="#fourn_qte_recue"+(indice_row+1);
+				
+													//on insère les données
+													$(id_marque).val(donnees_ligne[2]);
+													$(id_marque).trigger('change');
+													$(id_modele).val(donnees_ligne[3]);
+													$(id_modele).trigger('change');
+													$(id_etat).val(donnees_ligne[4]);
+													$(id_qte_recue).val(donnees_ligne[1]);
+													var ligne_courante=donnees_cmde[indice_row];
+
+
+											}
+									}
+						});
+								
+
+					});
+
+		// cette partie gère les liste déroulante marque, modèle et état qui sont des listes déroulantes changeantes en fonction de la valeur choisie des autres
+		 			// lorque que le champ marque cela charge les modèles correspondants dans le champ modèle
+					$('select:eq(1)').change(function(){
+							var select_modele_ligne=$('select:eq(1)',$(this).parent().parent().parent());
+							var select_marque_ligne=this;
+							var select_etat_ligne=$('select:eq(2)',$(this).parent().parent().parent());
+							$.ajax({
+									url: 'traitement_bdd/chargement_marque_modele_etat_cmde_fournisseurs.php',
+									type: "POST",
+									async: false,
+									data: { marque: $(this).val(), type: "marque" }, 
+									success: function(html) { 								
+											$(select_modele_ligne).html(html);
+											// cela permet de recharger les données du champ état qui dépendent du champ modèle
+											$(select_modele_ligne).trigger('change');
+									}
+							});
+					});
+			// lorque que le champ modele cela charge les états correspondants dans le champ modèle
+					$('select:eq(2)').change(function(){
+							var select_marque_ligne=$('select:eq(0)',$(this).parent().parent().parent());
+							var select_etat_ligne=$('select:eq(2)',$(this).parent().parent().parent());
+							$.ajax({
+									url: 'traitement_bdd/chargement_marque_modele_etat_cmde_fournisseurs.php',
+									type: "POST",
+									async: false,
+									data: { modele: $(this).val(), type: "modele" }, 
+									success: function(html) { 								
+											$(select_etat_ligne).html(html);
+									}
+							});
+					});
+// cette partie les ajouts et suppression d'éléments du formulaire
 		// fonction pour cloner, ajouter et maj des indices de ligne
 
 						// cette fonction retourne un clone de la ligne dont l'id est id
@@ -269,15 +394,25 @@
 										id_ligne=id_ligne.replace(regex,(num_ligne+1));
 										$(this).attr('id',id_ligne);
 								});
+						}						
+						// fonction qui colore une ligne sur deux une sélection de ligne
+						function color_selection_ligne(selecteur_lignes)
+						{
+								// on parcoure une à une les lignes sélectionnées
+								$(selecteur_lignes).each(function(num_ligne){
+										if(num_ligne%2==0)
+												$(this).css('background-color','white');
+								});
 						}
 
 		// partie pour gérer l'ajout et la suppression de ligne de ligne de la partie "répartition des produits" dans les différents stocks
 
 						// bouton qui supprime la ligne n°1 de la partie "répartition des produits dans les stocks" de la 1ère ligne du formulaire
 						$('button:eq(1)').click(function(){
+								var num_ligne=$(this).parent().parent().parent().attr('id').match(/\d+/);
 								suppression_ligne(this,2);
+								maj_indice_ligne('[id*="repartition_four_stock_ligne'+num_ligne+'_"]','',/\d+$/)
 
-						//		maj_indice_ligne('[id*="ligne_cmde_"]','h3',/\d+/)
 						});
 
 						// bouton ajout d'une ligne du formulaire de la partie "réparition dans les différents stocks
@@ -285,7 +420,7 @@
 								// on détermine la ligne dans laquelle le bouton se trouve
 								var num_ligne=$(this).parent().parent().attr('id').match(/\d+/);
 								// on ajoute une ligne vide à partie "répartition des produits de la ligne déterminé par l'emplacement du bouton
-								ajout_ligne_vide(clone_first_empty_ligne_repartition_fourni,'#ajout_repartition_four',true);
+								ajout_ligne_vide(clone_first_empty_ligne_repartition_fourni,'#ajout_repartition_four'+num_ligne,true);
 								// on met à jour dans cette ligne les id et name des lignes de la partie "répartition des produits"
 								maj_indice_ligne('[id*="repartition_four_stock_ligne'+num_ligne+'_"]','',/\d+$/)
 						});
@@ -298,18 +433,22 @@
 						// bouton ajout d'une ligne du formulaire
 						$('button:eq(3)').click(function(){
 								ajout_ligne_vide(clone_first_empty_ligne_fourni,'#fin_des_lignes',true)
-								maj_indice_ligne('[id*="ligne_cmde_"]','h3',/\d+/)
+								maj_indice_ligne('[id*="ligne_cmde_fourn_"]','h3',/\d+/)
+								color_selection_ligne('[id*="ligne_cmde_fourn_"]');
+
 						});	
 						
 						// bouton delete de la ligne n°1
 						$('button:eq(0)').click(function(){
 								suppression_ligne(this,3);
-								maj_indice_ligne('[id*="ligne_cmde_"]','h3',/\d+/)
+								maj_indice_ligne('[id*="ligne_cmde_fourn_"]','h3',/\d+/)
+								color_selection_ligne('[id*="ligne_cmde_fourn_"]');
 						});
 
 						// cette partie sert à cloner la première ligne et à la garder en mémoire pour pouvoir l'insérer à volonté aprèsi
-						var clone_first_empty_ligne_fourni = clone_ligne('#ligne_cmde_1');
+						var clone_first_empty_ligne_fourni = clone_ligne('#ligne_cmde_fourn_1');
 						
+				});
 		</script>
   </body>
 </html>
