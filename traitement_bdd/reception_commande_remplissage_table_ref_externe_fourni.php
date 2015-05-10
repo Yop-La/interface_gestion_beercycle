@@ -8,106 +8,67 @@
 		if($_SESSION['identification'])
 		{
 
+		// variable de retour : pas beosoin de gérer les messages d'erreurs -> dataTable s'en occupe
+		$retour=array();
+
+
 // pour remplir la dataTable de la réception des commandes par ZFW | BEE
 				
 		// connexion à la base
 		include("connexion.php");
 				
 		// on va afficher dans ce tableau toutes les références externes des prestataires
-		// Ces réfs externes se divisent en 6 catégories
-		// catégorie 1 : envoyé par fourni, récupéré par | ZFW | et suite à demande zfw 
+		// Ces réfs externes se divisent en 2 catégories
+		// catégorie 1 : envoyé par fourni, récupéré par | ZFW |
 		//            																	 | BEE |	
 
 				// requête associée
-				$requete1="select distinct ref_cmde_externe from cmde_fournisseur as cf, ligne_commande_origine as lco where ref_demande_zfw!=0 and cf.ref_cmdef=lco.ref_cmdef and cf.statut='ouvert'"; 
+				$requete0="select distinct ref_cmde_externe from cmde_fournisseur as cf where cf.statut='ouvert'"; 
 		
-		// catégorie 2 : envoyé par bee, récupéré par | ZFW | et suite à demande zfw 
+		// catégorie 2 : envoyé par bee, récupéré par | ZFW |
 
 				// requête associée
-				$requete2="select distinct ref_externe_prestataire from expedition_bee as eb, ligne_expedition_bee as leb, ligne_commande_origine as lco where ref_demande_zfw!=0 and eb.ref_expedition_bee=leb.ref_expedition_bee and leb.ref_l_cmdef = lco.ref_l_cmdef"; 
-
-		// catégorie 3 : envoyé par fourni, récupéré par | ZFW | et suite à aucune demande zfw 
-		//            																	 | BEE |	
-
-				// requête associée
-				$requete3="select distinct ref_cmde_externe from cmde_fournisseur as cf, ligne_commande_origine as lco where ref_demande_zfw=0 and cf.ref_cmdef=lco.ref_cmdef and cf.statut='ouvert'"; 
-		
-		// catégorie 4 : envoyé par bee, récupéré par | ZFW | et suite à aucune demande zfw 
-
-				// requête associée
-				$requete4="select distinct ref_externe_prestataire from expedition_bee as eb, ligne_expedition_bee as leb, ligne_commande_origine as lco where ref_demande_zfw=0 and eb.ref_expedition_bee=leb.ref_expedition_bee and leb.ref_l_cmdef = lco.ref_l_cmdef"; 
+				$requete1="select distinct ref_externe_prestataire from expedition_bee as eb where eb.statut='ouvert'"; 
 
 
-				//fonction qui retourne les données de la requête au format de la DataTable nommée "liste_ref_externe_fourni".
-
-				// exécution des 4 requeêtes et récupération de leurs nombres de lignes
-				$reponse1 = $bdd->query($requete1);
-				$nbre_row1= $reponse1->rowCount();
-				$reponse2 = $bdd->query($requete2);
-				$nbre_row2= $reponse2->rowCount();
-				$reponse3 = $bdd->query($requete3);
-				$nbre_row3= $reponse3->rowCount();
-				$reponse4 = $bdd->query($requete4);
-				$nbre_row4= $reponse4->rowCount();
-				// on envoie le début du json
-				echo '{"data": [';
-
-				$indice_row = 1;
-				while ($row = $reponse1->fetch())
+			
+				for($i=0;$i<=1;$i++)
 				{
-						echo '[';
-						echo '"'.$row['ref_cmde_externe'].'"';
-						echo	',"four"'; 
-						echo	',"dem"';
-						if($nbre_row2 != 0 or $nbre_row3 != 0 or $nbre_row4 != 0 or $indice_row!=$nbre_row1)
-								echo '],';
-						else
-								echo ']';
-						$indice_row++;
+						$index=['ref_cmde_externe','ref_externe_prestataire'];
+						$expediteur=['four','dem'];
+						$requete='requete'.$i;
+						$reponse='reponse'.$i;
+						$$reponse = $bdd->query($$requete);
+						while ($row = $$reponse->fetch())
+						{
+								$tampon=array();
+								array_push($tampon,$row[$index[$i%2]]);
+								array_push($tampon,$expediteur[$i%2]);
+								// on va lire dans la bbd le nombre lignes de la commande en cours
+								if($index[$i%2]=='ref_cmde_externe')
+								{
+										$requete4="select count(*) as nbre_ligne from cmde_fournisseur as cf, ligne_commande_origine as lco where cf.ref_cmdef=lco.ref_cmdef and cf.ref_cmde_externe = ?";
+								}
+								else
+								{
+										$requete4="select count(*) as nbre_ligne from expedition_bee as eb, ligne_expedition_bee as leb where eb.ref_expedition_bee=lco.ref_expedition_bee and eb.ref_cmde_externe = ?";
+								}
+										$reponse4=$bdd->prepare($requete4);
+										$reponse4->execute(array($row[$index[$i%2]]));
+										$nbre_ligne_cmde = $reponse4->fetch();
+										$nbre_ligne_cmde = $nbre_ligne_cmde['nbre_ligne'];
+										array_push($tampon,$nbre_ligne_cmde);
+										$reponse4->closeCursor();
+
+								array_push($retour,$tampon);
+						}
+						
+						$$reponse->closeCursor();
 				}
-				$reponse1->closeCursor();
-				$indice_row = 1;
-				while ($row = $reponse2->fetch())
-				{
-						echo '[';
-						echo '"'.$row['ref_externe_prestataire'].'"';
-						echo	',"bee"'; 
-						echo	',"dem"'; 
-						if($nbre_row3 != 0 or $nbre_row4 != 0 or $indice_row!=$nbre_row2)
-								echo '],';
-						else
-								echo ']';
-						$indice_row++;
-				}
-				$reponse2->closeCursor();
-				$indice_row = 1;
-				while ($row = $reponse3->fetch())
-				{
-						echo '[';
-						echo '"'.$row['ref_cmde_externe'].'"';
-						echo	',"four"'; 
-						echo	',"pas dem"'; 
-						if($nbre_row4 != 0 or $indice_row!=$nbre_row3)
-								echo '],';
-						else
-								echo ']';
-						$indice_row++;
-				}
-				$reponse3->closeCursor();
-				$indice_row = 1;
-				while ($row = $reponse4->fetch())
-				{
-						echo '[';
-						echo '"'.$row['ref_externe_prestataire'].'"';
-						echo	',"bee"'; 
-						echo	',"pas dem"'; 
-						if($indice_row==$nbre_row4)
-								echo ']';
-						else
-								echo '],';
-						$indice_row++;
-				}
-				$reponse4->closeCursor();
-				echo ']}';
+				// on envoie le résutat des requêtes au tableau
+				echo '{"data": ';
+				echo json_encode($retour);
+				echo '}';
 		}
+
 ?>

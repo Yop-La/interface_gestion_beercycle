@@ -35,8 +35,14 @@ if($_SESSION['identification'])
 			));
 		$ref_dmd_zfw=$bdd->lastInsertId();
 		$req->closeCursor();
+		
+		// création d'un prépayement associé à cette demande
 
+		$req_new_prepayement = 'insert into paiement_dde_zfw (ref_dde_zfw ,montant_regle, user_id, date_heure_maj) values(:ref_dmd_zfw,0,"bidon",NOW())';
 
+		$pdo_new_prepayement = $bdd->prepare($req_new_prepayement);
+		$pdo_new_prepayement->execute(array('ref_dmd_zfw' => $ref_dmd_zfw));
+		$pdo_new_prepayement->closeCursor();
 
 }
 else

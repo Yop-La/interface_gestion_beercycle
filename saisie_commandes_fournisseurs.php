@@ -55,6 +55,7 @@
 													<th>Etat</th>
 													<th>Quantité commandée</th>
 													<th>Quantité demandée</th>
+													<th>Montant prépayement</th>
 											</tr>
 									</thead>
 					 
@@ -72,6 +73,7 @@
 													<th>Etat</th>
 													<th>Quantité commandée</th>
 													<th>Quantité demandée</th>
+													<th>Montant prépayement</th>
 											</tr>
 									</tfoot>
 							</table>
@@ -236,6 +238,10 @@
 											"visible": false,
 											"searchable": false
 									},									
+									{
+											"targets": [ 2 ],
+											"visible": false,
+									},
 									{
 											"targets": [ 5 ],
 											"visible": false,

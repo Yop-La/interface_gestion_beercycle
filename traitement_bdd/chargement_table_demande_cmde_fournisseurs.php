@@ -13,9 +13,9 @@
 				// connexion à la base
 				include("connexion.php");
 
-				// requête à soumettre à la base sql
-				$requete_sql="select dz.ref_canal_distrib as canal_distri, marque,ref_dde_zfw, libelle, dz.ref_produit, dz.user_id as user_saisie,dz.date_demande, dz.date_dern_maj,commentaire, modele, qte_ddee, qte_cmdee from canal_de_distribution as cd  ,demande_zfw as dz, produit as p where cd.ref_canal_distrib = dz.ref_canal_distrib and dz.ref_produit=p.ref_produit and qte_cmdee!=qte_ddee"; 
-
+				// requête à soumettre à la base sql pour récuperer toutes les infos sur toutes les demandes non satisfaites 
+				$requete_sql="select dz.ref_canal_distrib as canal_distri, marque,ref_dde_zfw, libelle, dz.ref_produit, dz.user_id as user_saisie,dz.date_demande, dz.date_dern_maj,commentaire, modele, qte_ddee, qte_cmdee from canal_de_distribution as cd  ,demande_zfw as dz, produit as p where cd.ref_canal_distrib = dz.ref_canal_distrib and dz.ref_produit=p.ref_produit and qte_cmdee<qte_ddee"; 
+				$req_montant_prepayement="select montant_regle from paiement_dde_zfw where ref_dde_zfw = ?";
 				//fonction qui retourne les données de la requête au format de la DataTable nommée "listes des demandes non satisfaites"
 
 				echo '{"data": [';
@@ -36,7 +36,12 @@
 						echo '"'.$row['modele'].'",';
 						echo '"'.$row['commentaire'].'",';
 						echo '"'.$row['qte_cmdee'].'",';
-						echo '"'.$row['qte_ddee'].'"';
+						echo '"'.$row['qte_ddee'].'",';
+						// on récupère le montant du prépayement asssocié à cette demande
+						$pdo_montant_prepayement=$bdd->prepare($req_montant_prepayement);
+						$pdo_montant_prepayement->execute(array($row['ref_dde_zfw']));
+						$ret_montant_prepayement=$pdo_montant_prepayement->fetch();
+						echo '"'.$ret_montant_prepayement['montant_regle'].'"';
 						if($indice_row==$nbre_row)
 								echo ']';
 						else

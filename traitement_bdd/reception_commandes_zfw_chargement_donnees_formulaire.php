@@ -8,7 +8,7 @@ if(!isset($_SESSION['identification']))
 if($_SESSION['identification'])
 {
 		// si les post sont bien instanciées
-		if(isset($_POST['ref_externe']) and isset($_POST['expediteur']) and isset($_POST['ref_demande']))
+		if(isset($_POST['ref_externe']) and isset($_POST['expediteur']) )
 		{
 				// connexion à la bdd
 				include("connexion.php");

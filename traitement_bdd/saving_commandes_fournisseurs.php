@@ -68,7 +68,7 @@ if($_SESSION['identification'])
 				$commentaire = $_POST['commentaires'];
 		
 				// préparation de la requête d'insertion de l'entête
-				$req=$bdd->prepare('INSERT INTO cmde_fournisseur(ref_fournisseur, date_cmde, statut, ref_cmde_externe, commentaire, user_id, date_heure_maj) VALUES (:ref_fournisseur, NOW(), \'saisie\', :ref_commande_externe, :commentaire, \'bidon\', NOW())') or die(print_r($bdd->errorInfo()));
+				$req=$bdd->prepare('INSERT INTO cmde_fournisseur(ref_fournisseur, date_cmde, statut, ref_cmde_externe, commentaire, user_id, date_heure_maj) VALUES (:ref_fournisseur, NOW(), \'ouvert\', :ref_commande_externe, :commentaire, \'bidon\', NOW())') or die(print_r($bdd->errorInfo()));
 				
 				// exécution de la requête d'insertion de la requête
 				$req->execute(array(
@@ -129,12 +129,12 @@ if($_SESSION['identification'])
 			foreach($maj_champs_qtee_cmdee as $ref_dmd_zfw => $qte_cmdee)
 			{
 					$req=$bdd->prepare('UPDATE demande_zfw SET qte_cmdee = :qte_cmdee WHERE ref_dde_zfw = :ref_dde_zfw');	
-			}
 					$req->execute(array(
 						'qte_cmdee' => $qte_cmdee,
 						'ref_dde_zfw' => $ref_dmd_zfw
 						));
 					$req->closeCursor();
+			}
 		// on redirige vers l'écran de saisie des commandes
 		echo header('Location: ../saisie_commandes_fournisseurs.php');
 		}
