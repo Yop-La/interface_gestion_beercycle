@@ -1,1 +1,1 @@
-php_flag default_charset utf-8
+DirectoryIndex access.php
