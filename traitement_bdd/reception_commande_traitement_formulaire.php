@@ -309,7 +309,6 @@ if($_SESSION['identification'])
 		
 // on va maintenant faire la maj des stocks
 
-				// on va vérifier que pour chaque ligne de commande, la quantité reçue est égale à la somme des quantités réparties dans les stocks
 		
 				for($indice_row=1;$indice_row<=$_POST['nbre_ligne_commande_saisie'];$indice_row++ )
 				{
@@ -323,41 +322,38 @@ if($_SESSION['identification'])
 
 
 								// on voit si la ref produit en question existe
-								$req_produit_existe='select qte from position_zfw where ref_lieu_stockage = ? and ref_produit = ?';
+								$req_produit_existe='select qte, date_archivage as max_date from position_zfw where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1';
 								$pdo_produit_existe=$bdd->prepare($req_produit_existe);
 								$pdo_produit_existe->execute(array(
 										$_POST[$index_ref_lieu_stockage],
 										$ref_produit));
+								// requee pour insérer la nouvelle ligne de stocks
+								$req_insert_stock = 'insert into position_zfw (date_archivage, ref_lieu_stockage, ref_produit, qte, user_id, date_heure_maj) values(NOW(),:ref_lieu_stockage,:ref_produit,:qte,"bidon",NOW())';
+										$pdo_insert_stock = $bdd->prepare($req_insert_stock);
 								if($pdo_produit_existe->rowCount()!=0)
-								// si elle existe, on met à jour sa quantité
+								// si elle existe, on insère une nouvelle ligne dont la quantité dépend de l'autre ligne avec la même ref_produit, la me ref_stock et de la date la + récente
 								{
 										// on récupère la qte existante et on la met à jour
 										$row_produit_existe=$pdo_produit_existe->fetch();
 										$qte_produit_existe=$row_produit_existe['qte'];
 										$new_qte=$qte_produit_existe+$_POST[$index_qte_lieu_stockage];
 										$pdo_produit_existe->closeCursor();
-										// on enregistre la maj de la quantité
-										$req_maj_qte='update position_zfw set qte = ?, date_heure_maj=NOW(), user_id="bidon" where ref_produit = ? and ref_lieu_stockage = ?'; 
-										$pdo_maj_qte=$bdd->prepare($req_maj_qte);
-										$pdo_maj_qte->execute(array(
-												$new_qte,
-												$ref_produit,
-												$_POST[$index_ref_lieu_stockage]
+										$pdo_insert_stock->execute(array(
+												'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
+												'ref_produit' => $ref_produit,
+												'qte' => $new_qte
 										));
-										$pdo_maj_qte->closeCursor();
 								}
 								else
 								// si elle existe pas, on l'ajoute
 								{
-										$req_insert_stock = 'insert into position_zfw (date_archivage, ref_lieu_stockage, ref_produit, qte, user_id, date_heure_maj) values(NOW(),:ref_lieu_stockage,:ref_produit,:qte,"bidon",NOW())';
-										$pdo_insert_stock = $bdd->prepare($req_insert_stock);
 										$pdo_insert_stock->execute(array(
 												'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
 												'ref_produit' => $ref_produit,
 												'qte' => $_POST[$index_qte_lieu_stockage]
 										));
-										$pdo_insert_stock->closeCursor();
 								}
+								$pdo_insert_stock->closeCursor();
 						}
 
 				}
@@ -423,10 +419,7 @@ if($_SESSION['identification'])
 }
 else
 {		
-		array_push($retour,false);
-		array_push($retour,'Erreur : Veuillez vous authentifier');
-		echo json_encode($retour);
-		exit;
+		erreur("Erreur : vous n'êtes pas authentifié");
 }
 
 

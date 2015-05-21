@@ -74,4 +74,40 @@
 				$retour_produit->closeCursor();
 				return($produit['ref_produit']);
 		}
-?>
+
+		// fonction pour afficher les erreurs sql après exécution d'une requête pdo
+		function errors_pdo($pdo)
+		{
+				$erreurs_sql = $pdo->errorInfo();
+				if($erreurs_sql[1]!=null)
+				{
+						erreur('Erreur d\'exécution de la requete : '.print_r($erreurs_sql,true));
+				}
+
+		}
+		// fonction pour exécuter une requête de type select avec les méthodes prepare et  execute. Cette fonction est faîte pôur les requêtes qui ne retournent qu'une seule ligne
+				// $req est la requête sous forme de string
+				// $array est le tableau des données qui complètent la requête ( les  ? )
+				// $index_rep est l'index permettant de sélectionner la réponse de la requête
+		function retour_select($req,$array,$index_rep,$bdd)
+		{
+				$pdo=$bdd->prepare($req);
+				$pdo->execute($array);
+				$rep=$pdo->fetch();
+				errors_pdo($pdo);
+				$pdo->closeCursor();
+				return($rep[$index_rep]);
+		}	
+		// idem que fonction précedente sauf que cela retourne tout le retour de fecth et pas juste une case
+		function retour_fetch_select($req,$array,$bdd)
+		{
+				$pdo=$bdd->prepare($req);
+				$pdo->execute($array);
+				$rep=$pdo->fetch();
+				errors_pdo($pdo);
+				$pdo->closeCursor();
+				return($rep);
+		}
+
+			
+	?>

@@ -266,10 +266,7 @@
 
 			// lorque que le champ marque cela charge les modèles correspondants dans le champ modèle
 					$('.ligne_champs select:eq(0)').change(function(){
-							var select_marque_ligne=$('select:eq(0)',$(this).parent().parent());
 							var select_modele_ligne=$('select:eq(1)',$(this).parent().parent());
-							var select_marque_ligne=this;
-							var select_etat_ligne=$('select:eq(2)',$(this).parent().parent());
 							$.ajax({
 									url: 'traitement_bdd/chargement_marque_modele_etat_cmde_fournisseurs.php',
 									type: "POST",
@@ -279,11 +276,10 @@
 											$(select_modele_ligne).html(html);
 									}
 							});
+							$(select_modele_ligne).trigger('change');
 					});
 			// lorque que le champ modele cela charge les états correspondants dans le champ modèle
 					$('.ligne_champs select:eq(1)').change(function(){
-							console.log('changement modèle');
-							var select_marque_ligne=$('select:eq(0)',$(this).parent().parent());
 							var select_etat_ligne=$('select:eq(2)',$(this).parent().parent());
 							$.ajax({
 									url: 'traitement_bdd/chargement_marque_modele_etat_cmde_fournisseurs.php',

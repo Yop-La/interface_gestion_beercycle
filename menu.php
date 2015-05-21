@@ -73,7 +73,7 @@
 								<li class="dropdown">
 									<a data-toggle="dropdown" href="#" <?php echo forme_menu('Ventes',$page)?> >Ventes et produits<b class="caret"></b></a>
 									<ul class="dropdown-menu">
-										<li><a href="#">Saisie des ventes</a></li>
+										<li><a href="identification_client.php">Saisie des ventes</a></li>
 										<li><a href="#">Mise à jour du catalogue</a></li>
 										<li><a href="#">Expéditions vers les clients</a></li>
 									</ul>

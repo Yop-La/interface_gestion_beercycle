@@ -55,7 +55,7 @@
 						</div>
 						<!-- formulaire de validation des commandes fournisseurs -->
 						<form class="col-lg-offset-1 col-lg-7  well">	
-							<div class="row vertical-align">
+							<div class="row ">
 								<div class="col-lg-10 col-lg-offset-1">
 									<h1 class="Bold ">
 										Formulaire de réception des commandes
@@ -176,7 +176,7 @@
 									</div>
 								</div>
 								<div class="col-lg-offset-5 col-lg-2 form-group" id="ajout_repartition_four1">
-										<button type="button" class="btn  btn-default form-control">
+										<button type="button" class="btn  btn-default form-control" >
 											Ajouter
 										</button>
 								</div>
@@ -187,7 +187,7 @@
 							</br>
 							<div class="row form-group" id="commandes_formulaires">
 								<div class="col-lg-3 col-lg-offset-3">
-									<button class="btn btn-default form-control ajout_ligne" type="button" >Ajouter</button>
+									<button class="btn btn-default form-control ajout_ligne" type="button" > Ajouter </button>
 								</div>
 								<div class="col-lg-3">
 									<button type="submit" class="btn btn-danger form-control" > Valider </button>
@@ -668,6 +668,7 @@
 										success: function(retour) { // Je récupère la réponse du fichier PHP
 												if(retour[0]) // si il y pas d'erreur
 												{
+														alert(typeof retour);
 														alert(retour[1]);
 												}
 												else //si il y a une erreur
