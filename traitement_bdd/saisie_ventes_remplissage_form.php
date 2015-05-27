@@ -55,8 +55,14 @@
 						
 						// ce tableau contient dans sa première case le prix usd et dans sa deuxième une liste déroulante de tous les stocks contenant le produit ou non
 						$tab_retour=array();
-						array_push($tab_retour,$prix_usd);
-						
+						if($prix_usd==null && $id_produit != null) // si le prix usd n'est pas dans le catalogue
+						{
+								array_push($tab_retour,"Inexistant dans catalogue");
+						}
+						else
+						{
+								array_push($tab_retour,$prix_usd);
+						}
 						if($_POST['etat']=='')
 						{
 								$retour='<option value="" selected></option>';
@@ -64,7 +70,7 @@
 								retour_ajax($tab_retour);	
 						}
 
-						// on récupère le stock du vendeur pour le proposer en 1er choix si il contient le produit
+						// on récupère le stock du vendeur pour le proposer en 1er choix
 						$req_stock='select ls.libelle as stock from utilisateur as ut, canal_de_distribution as cdd, lieu_stockage as ls where identifiant = ? and ut.ref_canal_distrib=cdd.ref_canal_distrib and ls.ref_lieu_stockage=cdd.ref_lieu_stockage_defaut';
 						$pdo_stock=$bdd->prepare($req_stock);
 						$pdo_stock->execute(array($_POST['id_vendeur_canal']));
@@ -75,8 +81,6 @@
 			
 						$retour=''; // cette variable contient la liste déroulante des lieux de stockage
 						
-						// on regarde si le stock par defaut contient le produit 
-
 						$retour='<option selected class="Bold" "value="' . $stock_defaut . '">' .  $stock_defaut . '</option>';
 
 						// on récupère tous les autres stocks
@@ -109,7 +113,7 @@
 						$ref_lieu_stockage=$ret_ref_lieu_stockage['ref_lieu_stockage'];
 					
 						// on récupère la qte dispo pour ce produit et cette ref_lieu_stockage
-						$req_qte_dispo='select qte, date_archivage as max_date from position_zfw where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1';		
+						$req_qte_dispo='select qte, date_archivage as max_date from position_zfw_reelle where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1';		
 						$pdo_qte_dispo = $bdd->prepare($req_qte_dispo);
 						$pdo_qte_dispo->execute(array($ref_lieu_stockage,$id_produit));
 						errors_pdo($pdo_qte_dispo);
@@ -155,12 +159,18 @@
 						errors_pdo($pdo_prix_devise);
 
 						// si on ne trouve aucun enregistrement dans catalogue_produit pour cette devise alors on fait directement la conversion dans le else	
+						// ce tableau $retour contient :
+								//dans sa première case un boolean pour savoir si le prix pour cette devise est dans le catalogue
+								// dans sa seconde case : le prix dans la devise qui est soit celui du catalogue, soit celui calculé à partir du cours
+						$retour=array();
 						if($pdo_prix_devise->rowCount()!=0)
 						{
-								retour_ajax($prix_devise);
+								array_push($retour,true);
+								array_push($retour,$prix_devise);
+								retour_ajax($retour);
 
 						}
-						else
+						else if($code_devise!='USD')
 						{
 								// on récupère le cours de la devise correspondante
 								$req_cours="select cours from parite_devise where code_devise= ?"; 
@@ -171,9 +181,24 @@
 								errors_pdo($pdo_cours);
 								$pdo_cours->closeCursor();
 								if($cours!=null)
-										retour_ajax($_POST['prix_usd']*$cours);
+								{
+										array_push($retour,false);
+										if($_POST['prix_usd']==0)
+												array_push($retour,'Inexistant dans catalogue');
+										else
+												array_push($retour,$_POST['prix_usd']*$cours);
+										retour_ajax($retour);
+								}
 								else
-										retour_ajax('cours_introuvable');
+										array_push($retour,false);
+										array_push($retour,'cours introuvable !');
+										retour_ajax($retour);
+						}
+						else
+						{
+								array_push($retour,false);
+								array_push($retour,'Inexistant dans catalogue');
+								retour_ajax($retour);
 						}
 						$pdo_prix_devise->closeCursor();
 				}

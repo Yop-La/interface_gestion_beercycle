@@ -48,23 +48,29 @@
 								else
 								{
 										echo 'var fonction = "'.$_POST['fonction'].'";'; // définition de la variable fonction qui va dicter le comportement du formulaire
+
+										if($_POST['fonction']=='maj_client_expe' && (empty($_POST['pseudo']) || empty($_POST['prenom']) || empty($_POST['nom'])))
+										{
+												echo 'erreur_post=1;';
+										}
+
+										if($_POST['fonction']=='maj_client_immediate') 
+												if(empty($_POST['pseudo']) || empty($_POST['prenom']) || empty($_POST['nom']) || empty($_POST['id_vente']))
+														echo 'erreur_post=2;';
+												else
+														echo 'var id_vente = "'.$_POST['id_vente'].'";'; 
+										
+										if($_POST['fonction']=='retirer_boutique' && (empty($_POST['prenom']) || empty($_POST['nom']) || empty($_POST['pseudo'])))
+										{
+												echo 'erreur_post=4;';
+										}
+
+										if(!in_array($_POST['fonction'],array('insert_client','maj_client_expe','maj_client_immediate','retirer_boutique')))
+										{
+												echo 'erreur_post=3;';
+										}
 								}
 
-								if($_POST['fonction']=='maj_client_expe' && (empty($_POST['pseudo']) || empty($_POST['pseudo']) || empty($_POST['pseudo'])))
-								{
-										echo 'erreur_post=1;';
-								}
-
-								if($_POST['fonction']=='maj_client_immediate') 
-										if(empty($_POST['pseudo']) || empty($_POST['pseudo']) || empty($_POST['pseudo']) || empty($_POST['id_vente']))
-												echo 'erreur_post=2;';
-										else
-												echo 'var id_vente = "'.$_POST['id_vente'].'";'; 
-
-								if($_POST['fonction']!= ('maj_client_immediate' || 'maj_client_expe' || 'insert_client') )
-								{
-										echo 'erreur_post=3;';
-								}
 								echo '</script>';
 			?>
 			<section class="contenu">
@@ -81,6 +87,8 @@
 												echo "Saisie des données pour l'expédition au client";
 										elseif($_POST['fonction']=='maj_client_immediate')
 												echo "Saisie des données pour vente immédiate";
+										elseif($_POST['fonction']=='retirer_boutique')
+												echo "Saisie des données client pour remise du produit en boutique plus tard";
 									?>
 									</h1>
 								</div>
@@ -94,7 +102,7 @@
 									<?php
 											if($_POST['fonction']=='insert_client')
 													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" required/>';
-											elseif($_POST['fonction']==('maj_client_expe' ||  'maj_client_immediate'))
+											elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
 													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" value="'.$_POST['pseudo'].'" required/>';
 									?>
 								</div>
@@ -103,7 +111,7 @@
 									<?php
 											if($_POST['fonction']=='insert_client')
 													echo '<input type="text" name="prenom" id="prenom" class="form-control" required/>';
-											elseif($_POST['fonction']==('maj_client_expe' ||  'maj_client_immediate'))
+											elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
 													echo '<input type="text" name="prenom" id="prenom" class="form-control" value="'.$_POST['prenom'].'"required/>';
 									?>
 								</div>
@@ -112,7 +120,7 @@
 									<?php
 											if($_POST['fonction']=='insert_client')
 													echo '<input type="text" name="nom" id="nom" class="form-control" required/>';
-											elseif($_POST['fonction']==('maj_client_expe' ||  'maj_client_immediate'))
+											elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
 													echo '<input type="text" name="nom" id="nom" class="form-control" value="'.$_POST['nom'].'" required/>';
 									?>
 								</div>
@@ -204,14 +212,14 @@
 							</div>
 							<?php
 									}
-									elseif($_POST['fonction']==('maj_client_expe' || 'maj_client_immediate'))
+									elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
 									{
 							?>
 							<div class="row form-group" id="commandes_formulaires">
 								<div class="col-lg-4 col-lg-offset-4">
 									<button class="btn btn-primary form-control" id="maj_client_pour_expe" type="submit"> 
 										<?php
-												if($_POST['fonction']=='maj_client_expe')
+												if(in_array($_POST['fonction'],array('maj_client_expe','retirer_boutique')))
 														echo 'Finir la vente';
 												else
 														echo 'Vers saisie des IMEI';

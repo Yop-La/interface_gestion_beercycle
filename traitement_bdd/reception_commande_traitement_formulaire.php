@@ -10,11 +10,14 @@ include("fonctions.php");
 $retour=null;
 if($_SESSION['identification'])
 {
+// Ce fichier sert à gérer les enregistrements suite à la validation du formulaire réception des commandes par ZFW ou par BEE
+		// Dans le 1er cas : réception par ZFW. On va réaliser 
+				// l'enregistrement de  de la commande dans ligne_commande_retour
+
 		
-//retour_ajax(print_r($_POST,true));	
 		// on vérifie que tous les posts sont bien présents et instanciées
 		// contient les index des champs de l'entête du formulaire
-		$index_post_entete=['fourn_ref_externe','fourn_nbre_ligne_cmde','fourn_expediteur','fourn_ref_demande'];
+		$index_post_entete=['fourn_ref_externe','fourn_nbre_ligne_cmde','fourn_expediteur','fourn_ref_demande','destinataire'];
 		// contient les indexs des champs de la partie validation ou modification des commandes
 		$index_post_commande=['fourn_marque','fourn_modele','fourn_etat','fourn_qte_recue'];
 		// contient les indexs des champs de la partie répartition des produits dans les stocks
@@ -44,15 +47,18 @@ if($_SESSION['identification'])
 				{
 						erreur('Erreur : nbre de ligne de commandes saisies pas instanciées ou pas entier différent de 0');
 				}
-	
-		//on vérifie maintenant que post contient bien les nombres de lignes de stocks saisies par ligne de commande
-		for($indice_ligne_cmde=1;$indice_ligne_cmde<=$_POST['nbre_ligne_commande_saisie'];$indice_ligne_cmde++)
+		
+		if($_POST['destinataire']=='ZFW')
 		{
-				if(!isset($_POST['nb_ligne_stk'.$indice_ligne_cmde]) or !verif_entier_non_nul($_POST['nb_ligne_stk'.$indice_ligne_cmde]))
+				//on vérifie maintenant que post contient bien les nombres de lignes de stocks saisies par ligne de commande
+				for($indice_ligne_cmde=1;$indice_ligne_cmde<=$_POST['nbre_ligne_commande_saisie'];$indice_ligne_cmde++)
 				{
-						erreur('Erreur : nbre de ligne de stocks saisies pas instanciées ou pas entier différent de 0');
-				}
+						if(!isset($_POST['nb_ligne_stk'.$indice_ligne_cmde]) or !verif_entier_non_nul($_POST['nb_ligne_stk'.$indice_ligne_cmde]))
+						{
+								erreur('Erreur : nbre de ligne de stocks saisies pas instanciées ou pas entier différent de 0');
+						}
 
+				}
 		}
 		// on vérifie que le nombre de lignes de commandes supplémentaires est instanciées et est bien un entier
 		if(!isset($_POST['nbre_lignes_suppl']) or !verif_entier($_POST['nbre_ligne_commande_saisie']))
@@ -95,20 +101,23 @@ if($_SESSION['identification'])
 				$indice_ligne++;
 		}while($indice_ligne!=($_POST['nbre_ligne_commande_saisie']+1));
 
-		// vérification de la présence des post de la partie répartition dans les stocks
-		$indice_ligne=1;
-		do
+		if($_POST['destinataire']=='ZFW')
 		{
-				for($indice_ligne_stck=1;$indice_ligne_stck<=$_POST['nb_ligne_stk'.$indice_ligne];$indice_ligne_stck++)
+				// vérification de la présence des post de la partie répartition dans les stocks
+				$indice_ligne=1;
+				do
 				{
-						for($indice_champ=0;$indice_champ<count($index_post_stockage);$indice_champ++)
+						for($indice_ligne_stck=1;$indice_ligne_stck<=$_POST['nb_ligne_stk'.$indice_ligne];$indice_ligne_stck++)
 						{
-								if(!isset($_POST[$index_post_stockage[$indice_champ].$indice_ligne.'_'.$indice_ligne_stck]))
-										erreur('Erreur : tous les posts de la partie répartition dans les stocks ne sont pas instanciées');
+								for($indice_champ=0;$indice_champ<count($index_post_stockage);$indice_champ++)
+								{
+										if(!isset($_POST[$index_post_stockage[$indice_champ].$indice_ligne.'_'.$indice_ligne_stck]))
+												erreur('Erreur : tous les posts de la partie répartition dans les stocks ne sont pas instanciées');
+								}
 						}
-				}
-				$indice_ligne++;
-		}while($indice_ligne!=($_POST['nbre_ligne_commande_saisie']+1));
+						$indice_ligne++;
+				}while($indice_ligne!=($_POST['nbre_ligne_commande_saisie']+1));
+		}
 
 		// vérification de la présence des post qui permettent de savoir si il y a eu modification ou non sur une commande non supplémentaire
 		for($indice_ligne_no_sup=0;$indice_ligne_no_sup<$nbre_ligne_no_sup;$indice_ligne_no_sup++)
@@ -167,6 +176,7 @@ if($_SESSION['identification'])
 		// on récupère la ref de la commande
 		$ref_commande=$commande_source->fetch();
 		$ref_commande=$ref_commande['ref_cmde'];
+		errors_pdo($commande_source);
 		$commande_source->closeCursor();
 		
 		// déclaration du tableau qui va contenir les ref_ligne_commande ( forcément non supplémentaires) 
@@ -198,7 +208,7 @@ if($_SESSION['identification'])
 						$requete_ref_ligne_cmde='select ref_l_cmdef as ref_ligne_cmde from ligne_commande_origine where ref_cmdef= ? and ref_produit = ? and qte_cmdee = ?';
 						
 						// pour insérer les données dans la table ligne_commande_retour
-						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee) VALUES(:ref_l_cmdef,"C",:ref_produit,:qte_recue,NOW(),:ligne_valide,"bidon",NOW(),null)'; 
+						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee, destinataire) VALUES(:ref_l_cmdef,"CS",:ref_produit,:qte_recue,NOW(),:ligne_valide,"bidon",NOW(),null, :destinataire)'; 
 
 				}
 				else
@@ -206,7 +216,7 @@ if($_SESSION['identification'])
 						// pour récupérer la référence de la ligne de commande source
 						$requete_ref_ligne_cmde='select ref_l_expedition_bee as ref_ligne_cmde from ligne_expedition_bee where ref_expedition_bee= ? and ref_produit = ? and qte_expediee = ?';
 						// à compléter
-						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee) VALUES(null,"E",:ref_produit,:qte_recue,NOW(),:ligne_valide,"bidon",NOW(),:ref_l_cmdef)'; 
+						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee, destinataire) VALUES(null,"EB",:ref_produit,:qte_recue,NOW(),:ligne_valide,"bidon",NOW(),:ref_l_cmdef, :destinataire)'; 
 				}
 				
 						// commande en provenance du fournisseur directement
@@ -220,6 +230,7 @@ if($_SESSION['identification'])
 						$ret_ref_ligne_cmde=$pdo_ref_ligne_cmde->fetch();// contient la ref de la ligne de commande source
 						$ref_ligne_cmde=$ret_ref_ligne_cmde['ref_ligne_cmde'];
 						array_push($refs_ligne_cmde,$ref_ligne_cmde);
+						errors_pdo($pdo_ref_ligne_cmde);
 						$pdo_ref_ligne_cmde->closeCursor();
 						
 						// on insère les données dans la table ligne_commande_retour
@@ -228,8 +239,10 @@ if($_SESSION['identification'])
 								'ref_l_cmdef'=>$ref_ligne_cmde,
 								'ref_produit'=>$ref_produit_finale,
 								'qte_recue'=>$_POST['qtee_recue_final'.$indice_ligne_no_sup],
-								'ligne_valide'=>$ligne_identiques
+								'ligne_valide'=>$ligne_identiques,
+								'destinataire'=>$_POST['destinataire']
 						));
+					  errors_pdo($pdo_insert_lco);	
 						$pdo_insert_lco->closeCursor();
 				
 		}
@@ -240,29 +253,32 @@ if($_SESSION['identification'])
 				// il y a deux cas 
 				if($_POST['fourn_expediteur']=="four") // si la commande est expédiée par le fournisseur directement
 				{
-						$req_slct_ref_ligne_abste = 'select ref_l_cmdef as ref_ligne_cmde from ligne_commande_origine where ref_l_cmdef not in ('.$placeholders.')';
-						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee) VALUES(:ref_ligne_cmde,"C",null,0,NOW(),"N","bidon",NOW(),null)'; 
+						$req_slct_ref_ligne_abste = 'select lco.ref_l_cmdef as ref_ligne_cmde from ligne_commande_origine as lco, cmde_fournisseur as cf  where lco.ref_l_cmdef not in ('.$placeholders.') and lco.ref_cmdef = cf.ref_cmdef and cf.ref_cmde_externe = ?';
+						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee, destinataire) VALUES(:ref_ligne_cmde,"CS",null,0,NOW(),"N","bidon",NOW(),null,:destinataire)'; 
 
 				}
 				else // si la commande est expédiée par BEE
 				{
-						$req_slct_ref_ligne_abste='select ref_l_expedition_bee as ref_ligne_cmde from ligne_expedition_bee where ref_l_expedition_bee not in ($placeholders)';
-						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee) VALUES(null,"E",null,0,NOW(),"N","bidon",NOW(),:ref_ligne_cmde)'; 
-				}
+						$req_slct_ref_ligne_abste='select leb.ref_l_expedition_bee as ref_ligne_cmde from ligne_expedition_bee as leb, expedition_bee as eb where leb.ref_l_expedition_bee not in ('.$placeholders.') and leb.ref_expedition_bee =eb.ref_expedition_bee and eb.ref_externe_prestataire = ?';
+						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee, destinataire) VALUES(null,"EB",null,0,NOW(),"N","bidon",NOW(),:ref_ligne_cmde,:destinataire)'; 
+				}	
 				$pdo_slct_ref_ligne_abste = $bdd->prepare($req_slct_ref_ligne_abste);
-				$pdo_slct_ref_ligne_abste->execute($refs_ligne_cmde);
+				$pdo_slct_ref_ligne_abste->execute(array_merge($refs_ligne_cmde,array($_POST['fourn_ref_externe'])));
 				// on prépare la requête qui va insérer les données 
 				$pdo_insert_lcr=$bdd->prepare($requete_insert_lcr);
 				// tant qu'il y a des ref lignes absentes, on les insère dans ligne_commande_origine
 				while($ret_slct_ref_ligne_abste = $pdo_slct_ref_ligne_abste->fetch())
 				{
 					$pdo_insert_lcr->execute(array(
-							'ref_ligne_cmde'=>$ret_slct_ref_ligne_abste['ref_ligne_cmde']
+							'ref_ligne_cmde'=>$ret_slct_ref_ligne_abste['ref_ligne_cmde'],
+							'destinataire'=>$_POST['destinataire']
 					));
 				}
+				errors_pdo($pdo_slct_ref_ligne_abste);
+				errors_pdo($pdo_insert_lcr);
 				$pdo_slct_ref_ligne_abste->closeCursor();
 				$pdo_insert_lcr->closeCursor();
-				$retour='la commande source est différence de la commande reçue  : il y a des lignes en moins';
+				$retour='la commande source est différence de la commande reçue  : il y a des lignes en moins.';
 
 		}
 
@@ -272,12 +288,12 @@ if($_SESSION['identification'])
 
 				if($_POST['fourn_expediteur']=="four") // si la commande est expédiée par le fournisseur directement
 				{
-						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee) VALUES(null,"C",:ref_produit,:qte_recue,NOW(),"N","bidon",NOW(),null)'; 
+						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee, destinataire) VALUES(null,"CS",:ref_produit,:qte_recue,NOW(),"N","bidon",NOW(),null, :destinataire)'; 
 
 				}
 				else // si la commande est expédiée par BEE
 				{
-						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee) VALUES(null,"E",:ref_produit,:qte_recue,NOW(),"N","bidon",NOW(),null)'; 
+						$requete_insert_lcr='insert into ligne_commande_retour(ref_l_cmdef,origine_ligne,ref_produit,qte_recue,date_validation,flag_ligne_validee,user_id,date_heure_maj,ref_l_expedition_bee, destinataire) VALUES(null,"EB",:ref_produit,:qte_recue,NOW(),"N","bidon",NOW(),null, :destinataire)'; 
 				}
 				
 				for($indice_ligne_supp=0;$indice_ligne_supp<count($indices_lignes_supp);$indice_ligne_supp++)
@@ -287,9 +303,11 @@ if($_SESSION['identification'])
 						$pdo_requete_insert_lcr = $bdd->prepare($requete_insert_lcr);
 						$pdo_requete_insert_lcr->execute(array(
 								'ref_produit'=>$ref_produit,
-								'qte_recue'=>$_POST['fourn_qte_recue'.$indices_lignes_supp[$indice_ligne_supp]]
+								'qte_recue'=>$_POST['fourn_qte_recue'.$indices_lignes_supp[$indice_ligne_supp]],
+								'destinataire'=>$_POST['destinataire']
 
 						));
+						errors_pdo($pdo_requete_insert_lcr);
 						$pdo_requete_insert_lcr->closeCursor();
 				}
 				
@@ -308,27 +326,115 @@ if($_SESSION['identification'])
 				$pdo_maj_statut_commande->execute(array($ref_commande));
 		
 // on va maintenant faire la maj des stocks
+		// il y a deux cas possible dans la mise à jour de ces stocks :
+				// soit le destinataire est ZFW et dans ce cas on met à jour les stocks position_zfw_previ et position_zfw_reelle
+				// soit le destinataire est BEE et dans ce cas on met à jour stock_bee
 
-		
-				for($indice_row=1;$indice_row<=$_POST['nbre_ligne_commande_saisie'];$indice_row++ )
+				if($_POST['destinataire']=='ZFW')// si le destinataire est zfw, on met à jour position_zfw_previ et position_zfw_relle
 				{
-				$nbre_ligne_stock = 'nb_ligne_stk'.$indice_row;
-				$ref_produit=get_id_produit($_POST['fourn_marque'.$indice_row],$_POST['fourn_modele'.$indice_row],$_POST['fourn_etat'.$indice_row],$bdd);
-						for($indice_ligne_stock=1;$indice_ligne_stock <=$_POST[$nbre_ligne_stock]; $indice_ligne_stock++)
+						for($indice_row=1;$indice_row<=$_POST['nbre_ligne_commande_saisie'];$indice_row++ )
 						{
-								// on construit les index pour avoir accés à la ref_lieu_stockage et à la quantité
-								$index_ref_lieu_stockage='fourn_ref_lieu_stockage'.$indice_row.'_'.$indice_ligne_stock;
-								$index_qte_lieu_stockage='fourn_qte_lieu_stockage'.$indice_row.'_'.$indice_ligne_stock;
+						$nbre_ligne_stock = 'nb_ligne_stk'.$indice_row;
+						$ref_produit=get_id_produit($_POST['fourn_marque'.$indice_row],$_POST['fourn_modele'.$indice_row],$_POST['fourn_etat'.$indice_row],$bdd);
+								for($indice_ligne_stock=1;$indice_ligne_stock <=$_POST[$nbre_ligne_stock]; $indice_ligne_stock++)
+								{
+										// on construit les index pour avoir accés à la ref_lieu_stockage et à la quantité
+										$index_ref_lieu_stockage='fourn_ref_lieu_stockage'.$indice_row.'_'.$indice_ligne_stock;
+										$index_qte_lieu_stockage='fourn_qte_lieu_stockage'.$indice_row.'_'.$indice_ligne_stock;
 
+		// maj de position_zfw_previ d'abord
+
+										// on voit si la ref produit en question existe
+										$req_produit_existe='select qte, date_archivage as max_date from position_zfw_previ where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1';
+										$pdo_produit_existe=$bdd->prepare($req_produit_existe);
+										$pdo_produit_existe->execute(array(
+												$_POST[$index_ref_lieu_stockage],
+												$ref_produit
+										));
+										// requete pour insérer la nouvelle ligne de stocks dans position_zfw_previ
+										$req_insert_stock = 'insert into position_zfw_previ (date_archivage, ref_lieu_stockage, ref_produit, qte, user_id, date_heure_maj) values(NOW(),:ref_lieu_stockage,:ref_produit,:qte,"bidon",NOW())';
+												$pdo_insert_stock = $bdd->prepare($req_insert_stock);
+										if($pdo_produit_existe->rowCount()!=0)
+										// si elle existe, on insère une nouvelle ligne dont la quantité dépend de l'autre ligne avec la même ref_produit, la me ref_stock et de la date la + récente
+										{
+												// on récupère la qte existante et on la met à jour
+												$row_produit_existe=$pdo_produit_existe->fetch();
+												$qte_produit_existe=$row_produit_existe['qte'];
+												$new_qte=$qte_produit_existe+$_POST[$index_qte_lieu_stockage];
+												errors_pdo($pdo_produit_existe);	
+												$pdo_produit_existe->closeCursor();
+												$pdo_insert_stock->execute(array(
+														'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
+														'ref_produit' => $ref_produit,
+														'qte' => $new_qte
+												));
+										}
+										else
+										// si elle existe pas, on l'ajoute
+										{
+												$pdo_insert_stock->execute(array(
+														'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
+														'ref_produit' => $ref_produit,
+														'qte' => $_POST[$index_qte_lieu_stockage]
+												));
+										}
+										errors_pdo($pdo_insert_stock);
+										$pdo_insert_stock->closeCursor();
+		// maj de position_zfw_reelle ensuite
+
+										// on voit si la ref produit en question existe
+										$req_produit_existe='select qte, date_archivage as max_date from position_zfw_reelle where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1';
+										$pdo_produit_existe=$bdd->prepare($req_produit_existe);
+										$pdo_produit_existe->execute(array(
+												$_POST[$index_ref_lieu_stockage],
+												$ref_produit));
+										// requete pour insérer la nouvelle ligne de stocks dans position_zfw_previ
+										$req_insert_stock = 'insert into position_zfw_reelle (date_archivage, ref_lieu_stockage, ref_produit, qte, user_id, date_heure_maj) values(NOW(),:ref_lieu_stockage,:ref_produit,:qte,"bidon",NOW())';
+												$pdo_insert_stock = $bdd->prepare($req_insert_stock);
+										if($pdo_produit_existe->rowCount()!=0)
+										// si elle existe, on insère une nouvelle ligne dont la quantité dépend de l'autre ligne avec la même ref_produit, la me ref_stock et de la date la + récente
+										{
+												// on récupère la qte existante et on la met à jour
+												$row_produit_existe=$pdo_produit_existe->fetch();
+												$qte_produit_existe=$row_produit_existe['qte'];
+												$new_qte=$qte_produit_existe+$_POST[$index_qte_lieu_stockage];
+												errors_pdo($pdo_produit_existe);
+												$pdo_produit_existe->closeCursor();
+												$pdo_insert_stock->execute(array(
+														'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
+														'ref_produit' => $ref_produit,
+														'qte' => $new_qte
+												));
+										}
+										else
+										// si elle existe pas, on l'ajoute
+										{
+												$pdo_insert_stock->execute(array(
+														'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
+														'ref_produit' => $ref_produit,
+														'qte' => $_POST[$index_qte_lieu_stockage]
+												));
+										}
+										errors_pdo($pdo_insert_stock);
+										$pdo_insert_stock->closeCursor();
+								}
+
+						}
+				}
+				else if($_POST['destinataire']=='BEE')//si le destinataire est BEE, on met à jour stock_bee
+				{
+						for($indice_row=1;$indice_row<=$_POST['nbre_ligne_commande_saisie'];$indice_row++ )
+						{
+								$ref_produit=get_id_produit($_POST['fourn_marque'.$indice_row],$_POST['fourn_modele'.$indice_row],$_POST['fourn_etat'.$indice_row],$bdd);
 
 								// on voit si la ref produit en question existe
-								$req_produit_existe='select qte, date_archivage as max_date from position_zfw where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1';
+								$req_produit_existe='select qte, date_archivage as max_date from stock_bee where ref_produit = ? order by date_archivage desc limit 1';
 								$pdo_produit_existe=$bdd->prepare($req_produit_existe);
 								$pdo_produit_existe->execute(array(
-										$_POST[$index_ref_lieu_stockage],
-										$ref_produit));
-								// requee pour insérer la nouvelle ligne de stocks
-								$req_insert_stock = 'insert into position_zfw (date_archivage, ref_lieu_stockage, ref_produit, qte, user_id, date_heure_maj) values(NOW(),:ref_lieu_stockage,:ref_produit,:qte,"bidon",NOW())';
+										$ref_produit
+								));
+								// requete pour insérer la nouvelle ligne de stocks dans position_zfw_previ
+								$req_insert_stock = 'insert into stock_bee (date_archivage, ref_produit, qte, user_id, date_heure_maj) values(NOW(),:ref_produit,:qte,"bidon",NOW())';
 										$pdo_insert_stock = $bdd->prepare($req_insert_stock);
 								if($pdo_produit_existe->rowCount()!=0)
 								// si elle existe, on insère une nouvelle ligne dont la quantité dépend de l'autre ligne avec la même ref_produit, la me ref_stock et de la date la + récente
@@ -336,10 +442,10 @@ if($_SESSION['identification'])
 										// on récupère la qte existante et on la met à jour
 										$row_produit_existe=$pdo_produit_existe->fetch();
 										$qte_produit_existe=$row_produit_existe['qte'];
-										$new_qte=$qte_produit_existe+$_POST[$index_qte_lieu_stockage];
+										$new_qte=$qte_produit_existe+$_POST['fourn_qte_recue'.$indice_row];
+										errors_pdo($pdo_produit_existe);	
 										$pdo_produit_existe->closeCursor();
 										$pdo_insert_stock->execute(array(
-												'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
 												'ref_produit' => $ref_produit,
 												'qte' => $new_qte
 										));
@@ -348,21 +454,61 @@ if($_SESSION['identification'])
 								// si elle existe pas, on l'ajoute
 								{
 										$pdo_insert_stock->execute(array(
-												'ref_lieu_stockage' => $_POST[$index_ref_lieu_stockage] ,
 												'ref_produit' => $ref_produit,
-												'qte' => $_POST[$index_qte_lieu_stockage]
+												'qte' => $_POST['fourn_qte_recue'.$indice_row]
 										));
 								}
+								errors_pdo($pdo_insert_stock);
 								$pdo_insert_stock->closeCursor();
 						}
+				}
+
+
+// on va maintenant générrer une facture pour ZFW 
+				
+				if($_POST['destinataire']=='ZFW')
+				{
+						// il y a deux cas :
+								// soit la commande est envoyé par BEE
+								// soit la commande est envoyé par le fournisseur
+						
+
+/* REste à faire le deuxième cas et à gérer les cas sans demande */
+
+
+
+
+
+
+						$req_elem_factu = "select lcr.ref_l_cmdef_ret as ref_ligne_cmdef, dz.ref_canal_distrib as canal_distrib, lcr.qte_recue as qte_recue, lcr.ref_produit as ref_produit_recue from cmde_fournisseur cf, ligne_commande_origine as lco, ligne_commande_retour as lcr, demande_zfw as dz  where cf.ref_cmde_externe = ? and	cf.ref_cmdef = lco.ref_cmdef and lco.ref_demande_zfw = dz.ref_dde_zfw and lco.ref_l_cmdef = lcr.ref_l_cmdef";
+						$pdo_elem_factu = $bdd->prepare($req_elem_factu);
+						$pdo_elem_factu->execute(array(
+								$_POST['fourn_ref_externe']
+						));
+						while($ret_elem_factu=$pdo_elem_factu->fetch())
+						{
+								$prix_produit = retour_select('select prix from catalogue_produit where code_devise=? and ref_canal_distrib= ? and ref_produit = ? and date_validite>=NOW()',array('USD',$ret_elem_factu['canal_distrib'],$ret_elem_factu['ref_produit_recue']),'prix',$bdd);
+								$montant_totale_lcr=$ret_elem_factu['qte_recue']*$prix_produit;
+								if($prix_produit==null)
+								{
+										erreur('Erreur : impossible de terminer la facturation car impossible de trouver le prix catalogue de ce produit : '.$ret_elem_factu['ref_produit_recue'].' . Ajouter le prix au catalogue et faîte la facturation manuelle de cette ref_cmde_externe : '.$_POST['fourn_ref_externe']);
+								}
+								// on enregistre les élements de facturation
+								$req_saving_factu='insert into facturation_zfw(ref_ligne_cmdef,montant_a_payer, montant_regle, code_devise, user_id, flag_valide, date_heure_maj) values(?,?,0,"USD","bidon","N",NOW())';
+								$pdo_saving_factu=$bdd->prepare($req_saving_factu);
+								$pdo_saving_factu->execute(array(
+										$ret_elem_factu['ref_ligne_cmdef'],
+										$montant_totale_lcr
+								));
+								errors_pdo($pdo_saving_factu);
+								$pdo_saving_factu->closeCursor();
+						}
+						errors_pdo($pdo_elem_factu);
+						$pdo_elem_factu->closeCursor();
+						
 
 				}
-/*
-		[fourn_ref_lieu_stockage2_1] => 1
-    [fourn_qte_lieu_stockage2_1] => 45
-*/
-
-		retour_ajax('Commande enregistrée');	
+		retour_ajax($retour.'Commande enregistrée');	
 		
 
 // mettre à jour le statut de la commande source et la date de dernière modif: ouvert -> ferme
@@ -415,7 +561,6 @@ if($_SESSION['identification'])
 		[nbre_lignes_suppl] => 0
 */
 
-		exit;
 }
 else
 {		

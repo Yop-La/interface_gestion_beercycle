@@ -123,7 +123,7 @@ if($_SESSION['identification'])
 		{
 				insert_client(0,null,0,$bdd);
 				retour_ajax('Enregistrement effectué');
-		}elseif($_POST['fonction']=='maj_client_expe' || 'maj_client_immediate')
+		}elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
 		{
 				// première étape : mise à jour des données clients ou insertion du client si que présnet dans la table prospect
 				
@@ -179,7 +179,7 @@ if($_SESSION['identification'])
 						errors_pdo($pdo_maj_client);
 						$pdo_maj_client->closeCursor();
 		
-						if($_POST['fonction']=='maj_client_expe')
+						if(in_array($_POST['fonction'],array('maj_client_expe','retirer_boutique')))
 						{
 								retour_ajax('Vente terminée !');
 						}
@@ -191,6 +191,10 @@ if($_SESSION['identification'])
 				}
 
 				
+		}
+		else
+		{
+				erreur('bug');
 		}
 		
 }

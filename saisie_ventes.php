@@ -158,25 +158,38 @@
 										?>
 									</select>
 								</div>
-								<div class="col-lg-4">
-									<label for="prix_devise"> Prix dans la devise</label>
-									<input type="text" name="prix_devise" id="prix_devise" class="form-control" readonly='true' required/>
+								<div class="col-lg-4 col-lg-offset-4">
+									<label for="prix_usd"> Prix unitaire en dollard (indicatif)</label>
+									<input type="text" name="prix_usd" id="prix_usd" class="form-control" readonly='true' required/>
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-lg-4 col-lg-offset-2">
+									<label for="montant_total"> Montant total de la vente</label>
+									<input type="text" name="montant_total" id="montant_total" class="form-control" required/>
 								</div>
 								<div class="col-lg-4">
-									<label for="prix_usd"> Prix en dollard </label>
-									<input type="text" name="prix_usd" id="prix_usd" class="form-control" readonly='true' required/>
+									<label for="prix_devise"> Prix unitaire de la vente</label>
+									<input type="text" name="prix_devise" id="prix_devise" class="form-control" required/>
 								</div>
 							</div>
 							<div class="row">
 								<div style="border-bottom: 1px solid #E5E5E5;" class="col-lg-offset-2 col-lg-8"></div>
 							</div>
 							</br>
-							<div class="row form-group" id="commandes_formulaires">
-								<div class="col-lg-3 col-lg-offset-3">
-									<button class="btn btn-default form-control" type="submit"> A livrer </button>
+							<div class="row form-group">
+								<div class="col-lg-offset-4 col-lg-4">
+									<button type="submit" class="btn btn-primary form-control" value="a_retirer_en_boutique" > A retirer en boutique </button>
 								</div>
-								<div class="col-lg-3">
-									<button type="submit" class="btn btn-primary form-control" id="vente_immediate"> Vente immédiate </button>
+							</div>
+							<div class="row form-group">
+								<div class="col-lg-offset-4 col-lg-4">
+									<button value="a_livrer" type="submit" class="btn btn-default form-control" > A livrer </button>
+								</div>
+							</div>
+							<div class="row form-group">
+								<div class="col-lg-offset-4 col-lg-4">
+									<button type="submit" class="btn btn-primary form-control" value="vente_immediate" > Vente immédiate </button>
 								</div>
 							</div>
 						</form>
@@ -262,6 +275,8 @@
 																	{
 																			$('#lieu_stockage').html(ret[1][1]);
 																			$('#lieu_stockage').trigger('change');
+																			if(ret[1][0]==0) // si le prix usd n'est pas dans le catalogue
+																					alert("Le prix en dollard pour ce produit et ce canal de distribution n'est pas dans le catalogue. \n Vous pouvez tout de même saisir un prix \n Veuillez prévenir l'administrateur pour l'ajouter");
 																			$('#prix_usd').val(ret[1][0]);
 																	}
 																	else
@@ -305,7 +320,15 @@
 															success: function(ret) {
 																	if(ret[0])
 																	{
-																			$('#prix_devise').val(ret[1]);
+																			if(!ret[1][0])
+																			{
+																					if(!isNaN($(prix_usd).val()))
+																							alert("Le prix dans la devise sélectionnée n'est pas dans le catalogue. Contacter l'administrateur pour lui demander de l'ajouter.\nLe prix proposé est simplement la conversion du prix en dollard dans la devise sélectionnée"); 	
+																					else
+																							alert("Le prix pour ce produit et cette ref_canal_distrib n'exsite dans pas dans la devise sélectionnée dans le catalogue. De plus, aucune convertion ne peut être proposée car le prix en dollard n'existe pas dans le catalogue aussi. Vous pouvez cependant saisir un prix pour finaliser la vente. \n Contactez l'administrateur pour ajouter ces prix au catalogue");										
+																			}
+																			$('#prix_devise').val(ret[1][1]);
+																			$('#prix_devise').trigger('change');
 																	}
 																	else
 																			alert('problème : '+ret[1]);
@@ -313,11 +336,23 @@
 													});
 									});
 
+// lorsque le champ prix unitaire de la vente change, on demande à rentrer la quantité si ce champ est vide puis on calcule le montant total de la vente
+				
+									$('#prix_devise').change(function(){
+											if(!isNaN($('#prix_devise').val()))
+											{
+													$("#montant_total").val($('#qte_vendu').val()*$('#prix_devise').val());
+											}
+											else
+													$("#montant_total").val('prix unitaire inexistant');
+									});
+								
+
 // partie soumission du formulaire lorque l'on clique sur "enregistrer"
 						// pour connaitre le bouton de soumission du formulaire
 								var buttonpressed;
 								$('[type="submit"]').click(function() {
-										buttonpressed = $(this).attr('id');
+										buttonpressed = $(this).attr('value');
 								})
 
 								// soumission du formulaire
@@ -331,13 +366,15 @@
 				// deuxième partie, si champs bien remplis alors on envoie le formulaire
 										
 										var id_vente={}; // pour récupérer l'id de la vente que l'on insère à la soumission du formulaire
-										var infos_client = $('form:eq(0)').serialize();
 										// Envoi de la requête HTTP en mode asynchrone
+										var infos_vente = $(this).serializeArray();
+										infos_vente.push({name: 'fonction', value: buttonpressed });
+										console.log(infos_vente);
 										$.ajax({
 												dataType: "json",
 												url: 'traitement_bdd/saving_ventes.php', // Le nom du fichier indiqué dans le formulaire
 												type: 'POST', // La méthode indiquée dans le formulaire (get ou post)
-												data: $(this).serialize(), 
+												data: infos_vente, 
 												success: function(retour) { // Je récupère la réponse du fichier PHP
 														if(retour[0]) // si il y pas d'erreur
 														{
@@ -348,9 +385,14 @@
 																		maj_client['id_vente']=retour[1]; // on ajoute la ref de la vente dans le cas d'une vente immédiate afin de pouvoir saisr les IMEI après maj des données clients
 																		maj_client['fonction']='maj_client_immediate'; // permet de définir le comportement du formulaie de saisie des clients. C'est grâce à cette infos que l'on redirige vers saisie_imei par la suite
 																}
-																else
+																else if(buttonpressed=='a_livrer')
 																{
 																		maj_client['fonction']='maj_client_expe';// permet de définir le comportement du formulaire de saisie des clients 
+																}
+																else if(buttonpressed=='a_retirer_en_boutique')
+																{
+																		maj_client['fonction']='retirer_boutique';// permet de définir le comportement du formulaire de saisie des clients
+																		
 																}
 																// on remplit le tableau avec les infos du client
 																maj_client['pseudo']=$('#pseudo').val();

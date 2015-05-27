@@ -14,12 +14,15 @@ $(function() {
 				break;
     case 3:
         alert("Le post 'fonction' ne contient pas une valeur attendue \n Veuillez refaire votre saisie");
+    case 4:
+        alert("Tous les post pour mettre à jour les données client nécessaire à la remise du produit en boutique ne sont pas tous non vides \n Veuillez refaire votre saisie");
 				window.location.replace("identification_client.php");
 				break;
     default:
-        alert('Aucune erreur liées au post !');
+        alert('Vous pouvez commencer votre saisie');
 		} 
 
+		var cas_maj_client = ["maj_client_expe","maj_client_immediate","retirer_boutique"];// ce tableau nous toutes les valeurs de la variable fonction qu'on doit mettre à jour les données du client
 		if(fonction=='insert_client')
 		{
 				// pour connaitre le bouton de soumission du formulaire
@@ -69,7 +72,7 @@ $(function() {
 						});
 				});
 		}
-		else if(fonction== 'maj_client_expe'  || 'maj_client_immediate')
+		else if(cas_maj_client.indexOf(fonction)!=-1)
 		{
 				// on préremplit le formulaire avec les données de la base. A ce stade, les infos de la personne qui va acheter le produit sont soit dans la table client, soit dans la table prospect
 
@@ -130,13 +133,12 @@ $(function() {
 												{
 														alert(retour[1]);
 														$('form:eq(0)')[0].reset();
-														if(fonction == 'maj_client_expe')
+														if(fonction == 'maj_client_expe' || fonction == 'retirer_boutique')
 														{
 																window.location.replace("identification_client.php");
 														}
 														else if(fonction == 'maj_client_immediate')
 														{
-																alert(fonction);
 																pour_imei={};
 																pour_imei['id_vente']=id_vente;				
 																post('saisie_imei.php',pour_imei);
