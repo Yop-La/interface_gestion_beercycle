@@ -101,9 +101,9 @@
 									<label for="pseudo">Pseudonyme</label>
 									<?php
 											if($_POST['fonction']=='insert_client')
-													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" required readonly/>';
+													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" required/>';
 											elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
-													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" value="'.$_POST['pseudo'].'" required/>';
+													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" value="'.$_POST['pseudo'].'" required readonly/>';
 									?>
 								</div>
 								<div class="col-lg-4">

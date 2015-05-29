@@ -262,43 +262,42 @@ include("connexion.php");
 						$pdo_insert_stock->closeCursor();
 				
 				// maj du stock réelle dans le cas d'une vente immédiate
-				$maj_stock = true;// on fait la maj du tock réelle sauf si le produit n'est pas dans le stock
 				if($_POST['fonction']=='vente_immediate')
 				{
+						$maj_stock = true;// on fait la maj du stock réelle sauf si le produit n'est pas dans le stock
 						
-								// on récupère l'id produit pour chaque ligne de vente	
-								$ref_produit=get_id_produit(
-										$_POST['marque_'.$indice_ligne_vente],
-										$_POST['modele_'.$indice_ligne_vente],
-										$_POST['etat_'.$indice_ligne_vente],
-										$bdd
-								);
+						// on récupère l'id produit pour chaque ligne de vente	
+						$ref_produit=get_id_produit(
+								$_POST['marque_'.$indice_ligne_vente],
+								$_POST['modele_'.$indice_ligne_vente],
+								$_POST['etat_'.$indice_ligne_vente],
+								$bdd
+						);
 
 
-								// on regarde si le produit est en stock on calcule la nouvelle quantité du stock dans ce cas. Sinon on ne fait pas la maj du stock ( pas de qte négative pour le stock réelle )
-								$qte_avt_vente = retour_select(
-										'select qte from position_zfw_reelle where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1 ',
-										array(
-												$_POST["lieu_stockage_".$indice_ligne_vente],
-												$ref_produit
-										)
-										,'qte',
-										$bdd
-								);
-								if($qte_avt_vente==0)
-								{
-										$maj_stock=false;
-								}
-								else if($qte_avt_vente==null)
-								{
-										$qte_stock=0;		
-								}
-								else
-								{
-										$qte_stock = $qte_avt_vente-$_POST['qte_vendu_'.$indice_ligne_vente];
-								}
-
+						// on regarde si le produit est en stock on calcule la nouvelle quantité du stock dans ce cas. Sinon on ne fait pas la maj du stock ( pas de qte négative pour le stock réelle )
+						$qte_avt_vente = retour_select(
+								'select qte from position_zfw_reelle where ref_lieu_stockage = ? and ref_produit = ? order by date_archivage desc limit 1 ',
+								array(
+										$_POST["lieu_stockage_".$indice_ligne_vente],
+										$ref_produit
+								)
+								,'qte',
+								$bdd
+						);
+						if($qte_avt_vente===0)
+						{
+								$maj_stock=false;
 						}
+						else if($qte_avt_vente>0)
+						{
+								$qte_stock = $qte_avt_vente-$_POST['qte_vendu_'.$indice_ligne_vente];
+						}
+						else
+						{
+								$qte_stock=0;		
+						}
+
 						if($maj_stock)
 						{
 								// on insère la nouvelle ligne de stock 
@@ -328,6 +327,7 @@ include("connexion.php");
 								errors_pdo($pdo_insert_stock);
 								$pdo_insert_stock->closeCursor();
 						}
+				}
 
 				}
 

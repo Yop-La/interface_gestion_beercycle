@@ -57,8 +57,8 @@ if($_SESSION['identification'])
 						:commentaire,
 						'bidon',
 						NOW(), 
-						:cumul_qte_cmdee, :
-						date_dern_cmde, 
+						:cumul_qte_cmdee, 
+						:date_dern_cmde, 
 						:nb_cmde)";
 
 				$pdo_insert_client = $bd->prepare($req_insert_client);
