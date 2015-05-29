@@ -87,7 +87,7 @@ $(function() {
 								dataType: "json",
 								url: 'traitement_bdd/saisie_clients_remplissage_form.php',
 								type: 'POST', // La méthode indiquée dans le formulaire (get ou post)
-								data: $('form').serialize()+'&fonction='+fonction, 
+								data: $('form').serialize(), 
 								success: function(retour) { 
 										if(retour[0])
 										{

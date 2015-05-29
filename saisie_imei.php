@@ -40,7 +40,12 @@
 								}
 								echo '</script>;';
 								// on récupère le nbre de produits de la commande
-								$qte = retour_select('select qte from cmde_client where ref_cmdec = ?',array($_POST['id_vente']),'qte',$bdd);
+								$qte = retour_select(
+										'select qte_totale from cmde_client where ref_cmdec = ?',
+										array($_POST['id_vente']),
+										'qte_totale',
+										$bdd
+								);
 								
 			?>
 			<article>

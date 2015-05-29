@@ -20,7 +20,7 @@
     <script src="DataTables/media/js/jquery.dataTables.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="fonctions.js"></script>
+    <script src="js/fonctions.js"></script>
     <script src="js/saisie_clients.js"></script>
 
   </head>
@@ -101,7 +101,7 @@
 									<label for="pseudo">Pseudonyme</label>
 									<?php
 											if($_POST['fonction']=='insert_client')
-													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" required/>';
+													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" required readonly/>';
 											elseif(in_array($_POST['fonction'],array('maj_client_expe','maj_client_immediate','retirer_boutique')))
 													echo '<input type="text" name="pseudo" id="pseudo" class="form-control" value="'.$_POST['pseudo'].'" required/>';
 									?>

@@ -12,14 +12,54 @@ if($_SESSION['identification'])
 {
 // Ce fichier sert à traiter l'enregistrement du formulaire saisie_client. Il y a trois cas possibles :
 	// soit le formulaire est utilisé pour insérer et dans ce cas on le sait grâce à $_POST['fonction'] qui sera égale à 'insert_client'
-	// soit le formulaire est utilisé pour mettre à jour les données clients nécessecaire à l'expédition d'un produit ( $_POST['fonction'] = 'maj_client_expe' 
+	// soit le formulaire est utilisé pour mettre à jour les données clients nécessecaire à l'expédition d'un produit ( $_POST['fonction'] = 'maj_client_expe' ou 'retirer_boutique' 
 	// soit le formulaire est utilisé pour mettre à jour les données clients dans le cas d'une vente immédiate ( $_POST['fonction'] = 'maj_client_immediat' 
 		
 // fonction pour insérer un client	
 		function insert_client($cumul_qte_cmdee,$date_dern_cmde,$nb_cmde,$bd)
 		{
 				// réquête pour insérer le client
-				$req_insert_client="insert into client(username, nom, prenom, email, tel1, tel2, adresse_liv, ville_liv, region_liv,pays_liv,adresse_fac,ville_fac,region_fac,pays_fac,commentaire,user_id,date_heure_maj, cumul_qte_cmdee, date_dern_cmde, nb_cmde) values(:username, :nom, :prenom, :email, :tel1, :tel2, :adresse_liv, :ville_liv, :region_liv, :pays_liv, :adresse_fac, :ville_fac, :region_fac, :pays_fac, :commentaire,'bidon',NOW(), :cumul_qte_cmdee, :date_dern_cmde, :nb_cmde)";
+				$req_insert_client=
+				"insert into client(username, 
+						nom, 
+						prenom, 
+						email, 
+						tel1, 
+						tel2, 
+						adresse_liv, 
+						ville_liv, 
+						region_liv,
+						pays_liv,
+						adresse_fac,
+						ville_fac,
+						region_fac,
+						pays_fac,
+						commentaire,
+						user_id,
+						date_heure_maj, 
+						cumul_qte_cmdee, 
+						date_dern_cmde, 
+						nb_cmde) 
+				values(:username, 
+						:nom, 
+						:prenom, 
+						:email, 
+						:tel1, 
+						:tel2, 
+						:adresse_liv, 
+						:ville_liv, 
+						:region_liv, 
+						:pays_liv, 
+						:adresse_fac, 
+						:ville_fac, 
+						:region_fac, 
+						:pays_fac, 
+						:commentaire,
+						'bidon',
+						NOW(), 
+						:cumul_qte_cmdee, :
+						date_dern_cmde, 
+						:nb_cmde)";
 
 				$pdo_insert_client = $bd->prepare($req_insert_client);
 				$pdo_insert_client->execute(array(
@@ -57,6 +97,8 @@ if($_SESSION['identification'])
 		$index_post_adresse=['adresse','ville','region','pays'];
 		// contient la fin des indexs des champs des deux parties adresse
 		$fin_post_adresse=['_fac','_liv'];
+
+
 
 
 // vérification de la présence et de l'instanciation des post de la partie identité
@@ -105,6 +147,7 @@ if($_SESSION['identification'])
 		{
 				$_POST['commentaire']=null;
 		}
+// vérification de la présence et de l'instanciation du post fonction
 		if(empty($_POST['fonction']))
 		{
 				erreur("Le post fonction n'est pas instancié ou vide !"); 
@@ -136,7 +179,13 @@ if($_SESSION['identification'])
 				$pdo_client->closeCursor();
 
 				// on récupère les infos de la commande de ce client (la quantité surtout )
-				$qte_cmde_client = retour_select('select  qte, max(date_cmde) from cmde_client where pseudo = ?',array($_POST['pseudo']),'qte',$bdd); 
+				$qte_cmde_client = retour_select(
+						'select  qte_totale from cmde_client where pseudo = ? order by date_cmde desc limit 1',
+						array($_POST['pseudo']),
+						'qte_totale',
+						$bdd
+				); 
+
 				// si c'est un prospect on l'insère dans la table client et on le supprime de la table prospect
 				if($pas_client)
 				{
@@ -150,12 +199,37 @@ if($_SESSION['identification'])
 				// si le client est déjà dans la table client, on met à jour ses données
 				else
 				{
-						// n réucpère certaine infos de ce client afin de les mettre à jour
-						$ret_infos_client = retour_fetch_select('select  cumul_qte_cmdee, nb_cmde from client where username = ?',array($_POST['pseudo']),$bdd);
+						// on réucpère certaine infos de ce client afin de les mettre à jour
+						$ret_infos_client = retour_fetch_select(
+								'select  cumul_qte_cmdee, nb_cmde from client where username = ?',
+								array($_POST['pseudo']),
+								$bdd
+						);
 						$cumul_qte_cmdee=$ret_infos_client['cumul_qte_cmdee']+$qte_cmde_client;
 						$nb_cmde=$ret_infos_client['nb_cmde']+1;
 						// requete pour mettre à jour les données clients
-						$req_maj_client='update client set nom=:nom, prenom=:prenom, email=:email, tel1=:tel1, tel2=:tel2, adresse_liv=:adresse_liv, ville_liv=:ville_liv, region_liv=:region_liv,pays_liv=:pays_liv,adresse_fac=:adresse_fac,ville_fac=:ville_fac,region_fac=:region_fac,pays_fac=:pays_fac,commentaire=:commentaire,user_id="bidon",date_heure_maj=NOW(), cumul_qte_cmdee=:cumul_qte_cmdee,date_dern_cmde = NOW(), nb_cmde=:nb_cmde where username = :username';
+						$req_maj_client=
+								'update client 
+										set nom=:nom, 
+												prenom=:prenom, 
+												email=:email, 
+												tel1=:tel1, 
+												tel2=:tel2, 
+												adresse_liv=:adresse_liv, 
+												ville_liv=:ville_liv, 
+												region_liv=:region_liv,
+												pays_liv=:pays_liv,
+												adresse_fac=:adresse_fac,
+												ville_fac=:ville_fac,
+												region_fac=:region_fac,
+												pays_fac=:pays_fac,
+												commentaire=:commentaire,
+												user_id="bidon",
+												date_heure_maj=NOW(), 
+												cumul_qte_cmdee=:cumul_qte_cmdee,
+												date_dern_cmde = NOW(), 
+												nb_cmde=:nb_cmde 
+										where username = :username';
 						$pdo_maj_client=$bdd->prepare($req_maj_client);
 						$pdo_maj_client->execute(array(
 								'nom'=>$_POST['nom'], 
@@ -194,7 +268,7 @@ if($_SESSION['identification'])
 		}
 		else
 		{
-				erreur('bug');
+				erreur("Le post fonction n'a pas un valeur attendue !");
 		}
 		
 }

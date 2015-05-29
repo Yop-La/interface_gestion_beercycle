@@ -1,4 +1,7 @@
-				$(function() {
+		
+	// pour inclure le fichier fonctions.js
+	document.write("<script type='text/javascript' src=\"js/fonctions.js\"></script>" );
+			$(function() {
 						
 // gestion de la réception des commandes envoyées directement par le fournisseur et par bee 
 		// cela sert à remplir et à paramétrer la DataTable
@@ -188,16 +191,9 @@
 					});
 
 		
-// cette partie les ajouts et suppression d'éléments du formulaire
+// cette partie gère les ajouts et suppression d'éléments du formulaire
 		// fonction pour cloner, ajouter et maj des indices de ligne
 
-						// cette fonction retourne un clone de la ligne dont l'id est id
-						function clone_ligne(id)
-						{
-								var clone = $(id);
-								clone=$(clone).clone(true);
-								return clone;
-						}
 
 						// fonction pour insérer une ligne. Cette fonction insére un clone de clone avant l'élément "id insérer avant" si before=true sinon cela l'insère après.
 						function ajout_ligne_vide(clone,id_inserer_avant,before,checkbox_ligne_suppl,rouge)
@@ -252,7 +248,7 @@
 												$(this).attr('id',id_courant);
 										});
 										// maj des labels
-												$('[for]',this).each(function(){
+										$('[for]',this).each(function(){
 												var for_courant=$(this).attr('for');
 												for_courant=for_courant.replace(regex,(num_ligne+1));
 												$(this).attr('for',for_courant);

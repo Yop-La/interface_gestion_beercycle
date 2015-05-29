@@ -9,15 +9,17 @@
 		if($_SESSION['identification'])
 		{
 				// Ce fichier sert à pré-remplir le formulaire saisie des clients dans les cas suivants :
-						// soit dans le cas ou l'on doit saisir les infos d'expédition d'un client pour lui envoyer le produit qu'il va bientôt acheter
-						// soit dans le cas ou l'on doit mettre à jour les données d'un client sauf le pseudo qui est définitive
+				// ce fichier est appelée lorsque que 
+						// vente immédiate
+						// vente à retirer plus tard
+						// vente à livrer
 				include("connexion.php");
 
 				//tableau qui contient les nom des champs soit de la table client, soit de la table prospect qui vont servir au pré-remplissage
 				$champs_preremplissage=array();
 
 				// pour préremplir le formulaire de saisie des clients, dans le cas où l'on a besoin des infos pour expédier le produit sur le point d'ere vendu
-				if(!empty($_POST['pseudo']) && !empty($_POST['prenom']) && !empty($_POST['nom']) && !empty($_POST['fonction']))
+				if(!empty($_POST['pseudo']) && !empty($_POST['prenom']) && !empty($_POST['nom']) )
 				{
 						$champs_preremplissage=['username','prenom','nom','email','tel1','tel2','adresse_liv','ville_liv','region_liv','pays_liv','adresse_fac','ville_fac','region_fac','pays_fac','commentaire'];
 						$ret_client_prospect=null;

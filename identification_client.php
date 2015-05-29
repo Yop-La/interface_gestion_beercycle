@@ -20,7 +20,7 @@
     <script src="DataTables/media/js/jquery.dataTables.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="fonctions.js"></script>
+    <script src="js/fonctions.js"></script>
   </head>
   <body>
     <div class="container">

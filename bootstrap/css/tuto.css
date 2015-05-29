@@ -83,3 +83,12 @@ background-color: white;
     align-items: center;
 }
 
+/* bordure pour ligne vente , commande , etc*/
+.bordure_ligne {
+margin: 10px;
+padding: 10px;
+-moz-border-radius:10px;
+-webkit-border-radius:10px;
+border-radius:10px;
+border: 3px dashed #fe0000;
+}
