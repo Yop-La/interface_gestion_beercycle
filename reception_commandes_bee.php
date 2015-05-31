@@ -82,7 +82,7 @@
 								</div>
 								<div class="col-lg-3">
 									<label for="destinataire">Destinataire</label>
-									<input type="text" name="destinataire" id="destinataire" class="form-control" required readonly value="ZFW">
+									<input type="text" name="destinataire" id="destinataire" class="form-control" required readonly value="BEE">
 								</div>
 							</div>
 							<!-- 1ère ligne de la commande -->
@@ -170,7 +170,7 @@
 										<input type="text" name="qte_lieu_stockage1_1" id="qte_lieu_stockage1_1" class="form-control" required/>
 									</div>
 									<div class="col-lg-2">
-										<button type="button" class="delete_ligne_stock btn  btn-primary form-control">
+										<button type="button" class="delete_ligne_stock btn btn-primary form-control">
 											Delete
 										</button>
 									</div>

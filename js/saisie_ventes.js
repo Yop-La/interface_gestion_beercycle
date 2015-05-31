@@ -30,6 +30,10 @@
 											{
 													reset_formulaire();
 											}
+											if(premiers_champs_remplis())
+													read_only_lignes_vente(false);
+											else
+													read_only_lignes_vente(true);
 
 									});
 
@@ -39,6 +43,10 @@
 											{
 													reset_formulaire();
 											}
+											if(premiers_champs_remplis())
+													read_only_lignes_vente(false);
+											else
+													read_only_lignes_vente(true);
 
 									});
 
@@ -54,6 +62,10 @@
 											{
 													reset_formulaire();
 											}
+											if(premiers_champs_remplis())
+													read_only_lignes_vente(false);
+											else
+													read_only_lignes_vente(true);
 
 									});
 
@@ -201,30 +213,63 @@
 											return vierge;
 									}
 
-// on empeche la saisie des champs des lignes de commandes tant que la ref_canal_distrib, le vendeur et la devise  n'ont pas été saisis
-
-									function empecher_saisie_ligne_vente()
+// fonction qui empeche la modification des champs de toutes les lignes de commande ou qui l'autorise
+		// c'est le boolean read_only qui permet d'autoriser ou d'empêcher la modification des champs
+									function read_only_lignes_vente(read_only)
 									{
-													var nbre_champs_plein = 0;
-													$('select','.remplir_en_premier').each(function(){
-															if($(this).val()=='')
-															{
-																	alert("Veuillez remplir les 3 premiers champs avant toute saisie");
-																	$(this).focus();
-																	return false;
-															}
+											$('.ligne_vente').each(function(){
+													$('input',this).each(function(){
+															$(this).prop('disabled',read_only);
 													});
+													$('select',this).each(function(){
+															$(this).prop('disabled',read_only);
+													});
+											});
+											nom_modifiable=read_only;
 									}
-									$('input','.ligne_vente').focus(function()
+
+// fonction pour dire à l'utilisateur que les lignes de vente sont non modifiables tant les 3 premiers champs ne sont pas saisies
+
+								function alert_sur_saisie()
+								{
+											$('select','.remplir_en_premier').each(function(){
+													if($(this).val()=='')
+													{
+															alert("Veuillez remplir les 3 premiers champs avant toute saisie");
+															$(this).focus();
+															return false;
+													}
+											});
+								}
+
+// fonction pour savoir si les 3 premiers champs sont bien remplis
+	
+								function premiers_champs_remplis()
+								{		champs_remplis=true;
+										$('select','.remplir_en_premier').each(function(){
+												if($(this).val()=='')
+												{
+														champs_remplis=false;
+														return false;
+												}
+										});
+										return champs_remplis;
+								}
+
+// partie pour obliger la saisie des 3 premiers champs avant la saisie des lignes de vente
+
+									
+							$('.ligne_vente').mouseenter(function(){
+									if(premiers_champs_remplis())
 									{
-											if(lignes_vente_vierge())
-													empecher_saisie_ligne_vente();
-									});
-									$('select','.ligne_vente').focus(function()
+											read_only_lignes_vente(false);
+									}
+									else
 									{
-											if(lignes_vente_vierge())
-													empecher_saisie_ligne_vente();
-									});
+											alert_sur_saisie();
+									}
+							});
+							
 
 // fonction reset formulaire
 

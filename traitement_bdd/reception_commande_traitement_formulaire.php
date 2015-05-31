@@ -13,6 +13,21 @@ if($_SESSION['identification'])
 // Ce fichier sert à gérer les enregistrements suite à la validation du formulaire réception des commandes par ZFW ou par BEE
 		// Dans le 1er cas : réception par ZFW. On va réaliser 
 				// l'enregistrement de  de la commande dans ligne_commande_retour
+				// mettre à jour les stocks prévi et réelle
+				// générer une facture pour ZFW
+		// Dans le 1er cas, on doit gérer deux types de commandes différentes :
+				// celles envoyées le fournisseur
+				// celles envoyées par BEE
+
+		// Dans le 2nd cas : réception par BEE. On va réaliser
+				// l'enregistrement de  de la commande dans ligne_commande_retour
+				// mettre à jour le stock de BEE
+		
+
+		// le champ destinataire nous permet de connaître le cas dans lequel on se trouve
+		
+
+				
 
 		
 		// on vérifie que tous les posts sont bien présents et instanciées

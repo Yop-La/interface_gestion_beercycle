@@ -56,7 +56,7 @@
 									<ul class="dropdown-menu">
 										<li><a href="saisie_commandes_fournisseurs.php">Saisie des commandes fournisseurs</a></li>
 										<li><a href="#">Gestion des expédétions de BEE vers ZFW</a></li>
-										<li><a href="#">Réception des commandes de BEE</a></li>
+										<li><a href="reception_commandes_bee.php">Réception des commandes par BEE</a></li>
 										<li><a href="#">Bilan produit commandés/réceptionnés</a></li>
 									</ul>
 								</li>

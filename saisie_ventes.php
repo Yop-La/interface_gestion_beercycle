@@ -117,7 +117,7 @@
 								<div class="form-group row">
 									<div class="col-lg-4 col-lg-offset-1">
 										<label for="marque_1"> Marque </label>
-										<select id="marque_1" name="marque_1" class="form-control" required >
+										<select id="marque_1" name="marque_1" class="form-control" required disabled>
 											<option value="" selected></option>
 											<?php
 													$data = $bdd->query("SELECT distinct marque FROM produit");
@@ -131,7 +131,7 @@
 									</div>
 									<div class="col-lg-6">
 										<label for="modele_1"> Modèle </label>
-										<select id="modele_1" name="modele_1" class="form-control" required>
+										<select id="modele_1" name="modele_1" class="form-control" required disabled>
 											<option value="" selected></option>
 										</select>
 									</div>
@@ -139,13 +139,13 @@
 								<div class="form-group row">
 									<div class="col-lg-8 col-lg-offset-1">
 										<label for="etat_1"> Etat </label>
-										<select id="etat_1" name="etat_1" class="form-control" required>
+										<select id="etat_1" name="etat_1" class="form-control" required disabled>
 											<option value="" selected></option>
 										</select>
 									</div>
 									<div class="col-lg-2">
 										<label for="qte_vendu_1"> Quantité</label>
-										<input type="text" name="qte_vendu_1" id="qte_vendu_1" class="form-control" required/>
+										<input type="text" name="qte_vendu_1" id="qte_vendu_1" class="form-control" required disabled/>
 									</div>
 								</div>
 								<legend>
@@ -154,7 +154,7 @@
 								<div class="form-group row">
 									<div class="col-lg-4 col-lg-offset-2">
 										<label for="lieu_stockage_1"> Lieu de stockage </label>
-										<select id="lieu_stockage_1" name="lieu_stockage_1" class="form-control" required>
+										<select id="lieu_stockage_1" name="lieu_stockage_1" class="form-control" required disabled>
 											<option value="" selected></option>
 											<?php
 													$data = $bdd->query("SELECT ref_lieu_stockage, libelle FROM lieu_stockage");
@@ -168,19 +168,19 @@
 									</div>
 									<div class="col-lg-4">
 										<label for="qte_dispo_1"> Quantité disponible </label>
-										<input type="text" name="qte_dispo_1" id="qte_dispo_1" class="form-control" readonly='true' required/>
+										<input type="text" name="qte_dispo_1" id="qte_dispo_1" class="form-control" readonly='true' required disabled/>
 									</div>
 								</div>
 								<div class="form-group row">
 									<div class="col-lg-4 col-lg-offset-2">
 										<label for="prix_usd_1"> Prix unitaire en dollard</label>
-										<input type="text" name="prix_usd_1" id="prix_usd_1" class="form-control" readonly='true' required/>
+										<input type="text" name="prix_usd_1" id="prix_usd_1" class="form-control" readonly='true' required disabled/>
 									</div>
 									<div class="col-lg-4">
 										<label for="prix_devise_1"> Prix unitaire de la vente</label>
 										<div class="input-group">
 											<span class="input-group-addon devise_montant">€</span>
-											<input type="text" name="prix_devise_1" id="prix_devise_1" class="form-control" required/>
+											<input type="text" name="prix_devise_1" id="prix_devise_1" class="form-control" required disabled/>
 										</div>
 									</div>
 								</div>
