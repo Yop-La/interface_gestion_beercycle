@@ -20,7 +20,7 @@
     <script src="DataTables/media/js/jquery.dataTables.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="js/reception_commandes_zfw.js"></script>
+    <script src="js/reception_commandes.js"></script>
   </head>
   <body>
     <div class="container">
@@ -74,10 +74,10 @@
 								</div>
 								<div class="col-lg-3">
 									<label for="nbre_ligne_cmde">Nombre ligne</label>
-									<input type="text" name="nbre_ligne_cmde" id="nbre_ligne_cmde" class="form-control" readonly="true" required/>
+									<input type="value" name="nbre_ligne_cmde" id="nbre_ligne_cmde" class="form-control" readonly="true" required/>
 								</div>
 								<div class="col-lg-3">
-									<label for="fourn_expediteur">Expéditeur</label>
+									<label for="expediteur">Expéditeur</label>
 									<input type="text" name="expediteur" id="expediteur" class="form-control" readonly="true" required/>
 								</div>
 								<div class="col-lg-3">
@@ -140,7 +140,7 @@
 									<div class="col-lg-offset-4 col-lg-4">
 										<!-- champ quantité reçue -->
 										<label for="qte_recue1">Quantitée reçue</label>
-										<input type="text" name="qte_recue1" id="qte_recue1" class="form-control" required/>
+										<input type="value" name="qte_recue1" id="qte_recue1" class="form-control" required/>
 									</div>
 								</div>
 								<!-- répartition des produits dans les stocks -->
@@ -167,7 +167,7 @@
 									<div class="col-lg-4">
 										<!-- champ quantité pour le lieu de stockage choisi -->
 										<label for="qte_lieu_stockage1_1">Quantité attribué</label>
-										<input type="text" name="qte_lieu_stockage1_1" id="qte_lieu_stockage1_1" class="form-control" required/>
+										<input type="value" name="qte_lieu_stockage1_1" id="qte_lieu_stockage1_1" class="form-control" required/>
 									</div>
 									<div class="col-lg-2">
 										<button type="button" class="delete_ligne_stock btn btn-primary form-control">

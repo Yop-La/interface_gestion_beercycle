@@ -29,46 +29,47 @@ if($_SESSION['identification'])
 
 				
 
-		
+//		erreur(print_r($_POST,true));
 		// on vérifie que tous les posts sont bien présents et instanciées
 		// contient les index des champs de l'entête du formulaire
-		$index_post_entete=['fourn_ref_externe','fourn_nbre_ligne_cmde','fourn_expediteur','fourn_ref_demande','destinataire'];
+		$index_post_entete=['ref_externe','nbre_ligne_cmde','expediteur','destinataire'];
 		// contient les indexs des champs de la partie validation ou modification des commandes
-		$index_post_commande=['fourn_marque','fourn_modele','fourn_etat','fourn_qte_recue'];
+		$index_post_commande=['marque','modele','etat','qte_recue'];
 		// contient les indexs des champs de la partie répartition des produits dans les stocks
-		$index_post_stockage=['fourn_ref_lieu_stockage','fourn_qte_lieu_stockage'];
-		// contient les posts qui permettent de savoir si les lignes de commandes non supplémentaires ont été modifiés durant la saisie
-		$index_post_modif_commande=['ligne','marque_initi','marque_final','modele_initi','modele_final','etat_initi','etat_final','qtee_recue_initi','qtee_recue_final'];
+		$index_post_stockage=['ref_lieu_stockage','qte_lieu_stockage'];
 
 
-// vérification de la présence et de l'instanciation des post de l'entête
-		$index=0;
-		do
+// 1ère partie : vérification des données reçus ( reste à faire vérification du contenu )
+
+		// vérification de la présence et de l'instanciation des post de l'entête
+		foreach($index_post_entete as $index)
 		{
-				if(!isset($_POST[$index_post_entete[$index]]))
+				if(empty($_POST[$index]))
 				{
-						erreur('Erreur : tous les posts de l\'entête sont pas instanciées');
+						erreur('Erreur : tous les posts de l\'entête sont pas instanciés ou remplis');
 				}
-				$index++;
-		}while($index !=3);
+		}
 
-		// on vérifie que $_POST['four_nbre_ligne'] contient bien un entier
-		if(!verif_entier_non_nul($_POST['fourn_nbre_ligne_cmde']))
+		// on vérifie que le nombre lignes de commandes attendu est un entier non nul
+		if(!verif_entier_non_nul($_POST['nbre_ligne_cmde']))
 				{
 						erreur('Erreur : le nombre de ligne de la commande doit être un entier différent de 0');
 				}
+		
 		// on vérifie que le nombre de ligne de commandes saisies est instanciée et est un entier
-		if(!isset($_POST['nbre_ligne_commande_saisie']) or !verif_entier_non_nul($_POST['nbre_ligne_commande_saisie']))
+		if(empty($_POST['nbre_ligne_cmde_saisie']) or !verif_entier_non_nul($_POST['nbre_ligne_cmde_saisie']))
 				{
-						erreur('Erreur : nbre de ligne de commandes saisies pas instanciées ou pas entier différent de 0');
+						erreur('Erreur : nbre de ligne de commandes saisies pas instanciées ou pas entier différent de 0. Il doit y avoir au moins une ligne de commandes non supplémentaires');
 				}
 		
+		// si le destinataire est ZFW, on vérifie la présence des posts
 		if($_POST['destinataire']=='ZFW')
 		{
+		
 				//on vérifie maintenant que post contient bien les nombres de lignes de stocks saisies par ligne de commande
-				for($indice_ligne_cmde=1;$indice_ligne_cmde<=$_POST['nbre_ligne_commande_saisie'];$indice_ligne_cmde++)
+				for($indice_ligne_cmde=1;$indice_ligne_cmde<=$_POST['nbre_ligne_cmde_saisie'];$indice_ligne_cmde++)
 				{
-						if(!isset($_POST['nb_ligne_stk'.$indice_ligne_cmde]) or !verif_entier_non_nul($_POST['nb_ligne_stk'.$indice_ligne_cmde]))
+						if(empty($_POST['nbre_ligne_stock'.$indice_ligne_cmde]) or !verif_entier_non_nul($_POST['nbre_ligne_stock'.$indice_ligne_cmde]))
 						{
 								erreur('Erreur : nbre de ligne de stocks saisies pas instanciées ou pas entier différent de 0');
 						}
@@ -76,76 +77,57 @@ if($_SESSION['identification'])
 				}
 		}
 		// on vérifie que le nombre de lignes de commandes supplémentaires est instanciées et est bien un entier
-		if(!isset($_POST['nbre_lignes_suppl']) or !verif_entier($_POST['nbre_ligne_commande_saisie']))
-				{
-						erreur('Erreur : nbre de ligne de commandes saisies pas instanciées ou pas entier');
-				}
-
-		
-		// on vérifie qu' il y a plus d'une ligne de commande non supplémentaire
-		$nbre_ligne_no_sup=$_POST['nbre_ligne_commande_saisie']-$_POST['nbre_lignes_suppl'];
-		if($nbre_ligne_no_sup==0)
+		if(empty($_POST['nbre_ligne_sup']) or !verif_entier($_POST['nbre_ligne_sup']))
 		{
-				erreur("Erreur : Veuillez saisir au moins une ligne de commande non supllémentaires");
-		}
-
-		// on vérifie dans le cas où il y a des lignes supp que leurs marqueurs sont instanciées et on ne profite pour stocker les indices de ces lignes dans le tableau indices_lignes_supp
-		$indices_lignes_supp =array(); // pour stocker les indices des lignes supp
-		for($indice_ligne_supp=1;$indice_ligne_supp<=$_POST['nbre_lignes_suppl'];$indice_ligne_supp++)
-		{
-				$indice_ligne_supp=$nbre_ligne_no_sup+$indice_ligne_supp;
-				array_push($indices_lignes_supp,$indice_ligne_supp);
-				if(!isset($_POST['ligne_suppl_'.$indice_ligne_supp]))
-				{
-						erreur("Erreur : la valeur des checkbox des lignes supplémentaires ne sont pas instanciées");
-				}
+				erreur('Erreur : nbre de ligne de commandes supplémentaires saisies pas instanciées ou pas entier');
 		}
 
 
-		// vérification de la présence des post de la partie validation et modification de la commande du formulaire
-		$indice_ligne=1;
-		do
-		{
-				$indice_champ=0;
-				do
-				{
-						if(!isset($_POST[$index_post_commande[$indice_champ].$indice_ligne]))
-								erreur('Erreur : tous les posts de la partie validation et modification de la commande ne sont pas instanciées');
-						$indice_champ++;
-				}while($indice_champ!=3);
-				$indice_ligne++;
-		}while($indice_ligne!=($_POST['nbre_ligne_commande_saisie']+1));
+		// vérification de la présence des post de la partie validation et modification de la commande du formulaire et de la partie réparition dans les stocks
 
-		if($_POST['destinataire']=='ZFW')
-		{
-				// vérification de la présence des post de la partie répartition dans les stocks
-				$indice_ligne=1;
-				do
-				{
-						for($indice_ligne_stck=1;$indice_ligne_stck<=$_POST['nb_ligne_stk'.$indice_ligne];$indice_ligne_stck++)
-						{
-								for($indice_champ=0;$indice_champ<count($index_post_stockage);$indice_champ++)
-								{
-										if(!isset($_POST[$index_post_stockage[$indice_champ].$indice_ligne.'_'.$indice_ligne_stck]))
-												erreur('Erreur : tous les posts de la partie répartition dans les stocks ne sont pas instanciées');
-								}
-						}
-						$indice_ligne++;
-				}while($indice_ligne!=($_POST['nbre_ligne_commande_saisie']+1));
-		}
+			// des lignes de commande d'abord
+			foreach(['nbre_ligne_cmde_saisie','nbre_ligne_sup'] as $nbre_type_ligne)// pour balayer les deux types de ligne : cmde et supplémentaires
+			{
+					// pour balayer toutes les lignes du type courant ( soit sup, soi cmde)
+					for($i_row_cmde=1;$i_row_cmde<=$_POST[$nbre_type_ligne];$i_row_cmde++)
+					{
+							if($nbre_type_ligne=='nbre_ligne_sup')// on redéfinit l'index de ligne pour les lignes de commande sup car leur numérotation suit celle des lignes de cmde
+									$i_row_cmde=$i_row_cmde+$_POST['nbre_ligne_cmde_saisie'];
+							// pour vérifier l'instanciation de tous les champs de la partie validation et modification de la  commande
+							foreach($index_post_commande as $index_champ_cmde)
+							{	
+									if($nbre_type_ligne=='nbre_ligne_sup')
+											$index_champ_cmde='sup_'.$index_champ_cmde.$i_row_cmde;
+									else
+											$index_champ_cmde=$index_champ_cmde.$i_row_cmde;
+									if(empty($_POST[$index_champ_cmde]))
+									{
+											erreur('Tous les posts des lignes de commandes ne sont pas instanciés ou remplis : '.$index_champ_cmde);
+									}
+							}
 
-		// vérification de la présence des post qui permettent de savoir si il y a eu modification ou non sur une commande non supplémentaire
-		for($indice_ligne_no_sup=0;$indice_ligne_no_sup<$nbre_ligne_no_sup;$indice_ligne_no_sup++)
-		{
-				foreach($index_post_modif_commande as $index)
-				{
-						if(!isset($_POST[$index.($indice_ligne_no_sup+1)]))
-						{
-								erreur('Erreur : tous les posts qui permettent de connaître les modifications sur les lignes de commandes non supplémentaires ne sont pas instanciées :'.$index.($indice_ligne_no_sup+1));
-						}
-				}
-				
-		}
+							// pour vérifier l'instanciation de tous les champs de la partie répartition dans les stocks
+							for($i_row_stck=1;$i_row_stck<=$_POST['nbre_ligne_stock'.$i_row_cmde];$i_row_stck++) // on parcoure toutes les lignes de stocks de la ligne courante
+							{
+									foreach($index_post_stockage as $index_champ_stock)
+									{	
+											if($nbre_type_ligne=='nbre_ligne_sup')
+													$index_champ_stock='sup_'.$index_champ_stock.$i_row_cmde.'_'.$i_row_stck;
+											else
+													$index_champ_stock=$index_champ_stock.$i_row_cmde.'_'.$i_row_stck;
+											if(empty($_POST[$index_champ_stock]))
+											{
+													erreur('Tous les posts des lignes de stocks ne sont pas instanciés ou remplis : '.$index_champ_stock);
+											}
+									}
+									
+							}
+					}
+			}
+			erreur("C'est bon");
+
+			// des lignes supp ensuite
+
 // a ce stade :
 		//on a vérifier que tous les posts sont bien instanciées et que 
 		//    nbre de ligne de commandes saisies est un entier
@@ -153,7 +135,7 @@ if($_SESSION['identification'])
 		//    nbre de ligne commandes sources est un entier
 		//    nbre de ligne commandes supplémentaires est un entier
 		//    qu'il y a un a bien des lignes de commandes non supplémentaires
-// il reste à vérifier que ces variables ne soient pas vides et qu'elles aient le bon contenu
+// il reste à vérifier que ces variables aient le bon contenu
 
 // insertion des commande saisies dans la table ligne_commande_retour
 		// vérifier que la commande reçue correspond à ce qui a été commandée par BEE (pour la mise à jour du flag_ligne_validé dans la table ligne_commande_retour )
