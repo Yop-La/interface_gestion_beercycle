@@ -76,13 +76,25 @@ if($_SESSION['identification'])
 
 				}
 		}
-		// on vérifie que le nombre de lignes de commandes supplémentaires est instanciées et est bien un entier
-		if(empty($_POST['nbre_ligne_sup']) or !verif_entier($_POST['nbre_ligne_sup']))
+		// si le nbre de ligne de commande saisie est plus grand que le nbre de ligne de commande
+		if($_POST['nbre_ligne_cmde_saisie']>$_POST['nbre_ligne_cmde'])
 		{
-				erreur('Erreur : nbre de ligne de commandes supplémentaires saisies pas instanciées ou pas entier');
+				// on vérifie que le nombre de lignes de commandes supplémentaires est instanciées et est bien un entier
+				if(empty($_POST['nbre_ligne_sup']) or !verif_entier($_POST['nbre_ligne_sup']))
+				{
+						erreur('Erreur : nbre de ligne de commandes supplémentaires saisies pas instanciées ou pas entier');
+				}
 		}
-
-
+		// si il y a des lignes supplémentaires, on vérifie qu'il y n'y a pas moins de lignes de commandes sais 
+		if(!(empty($_POST['nbre_ligne_sup']) or !verif_entier($_POST['nbre_ligne_sup'])))
+		{
+				if($_POST['nbre_ligne_cmde_saisie']!=$_POST['nbre_ligne_cmde'])
+				{
+						erreur('Erreur : il ne peut y avoir de lignes supplémentaires lorsque le nombre de ligne de commandes est plus petit que celui de l\'entete');
+				}
+								
+		}
+		
 		// vérification de la présence des post de la partie validation et modification de la commande du formulaire et de la partie réparition dans les stocks
 
 			// des lignes de commande d'abord
@@ -129,12 +141,13 @@ if($_SESSION['identification'])
 			// des lignes supp ensuite
 
 // a ce stade :
-		//on a vérifier que tous les posts sont bien instanciées et que 
+		//on a vérifié que tous les posts sont bien instanciées et que 
 		//    nbre de ligne de commandes saisies est un entier
 		//    nbres de lignes de stocks saisies est un entier
 		//    nbre de ligne commandes sources est un entier
 		//    nbre de ligne commandes supplémentaires est un entier
 		//    qu'il y a un a bien des lignes de commandes non supplémentaires
+		// 		qu'il n'y pas de lignes supplémentaires lorsque le nbre de lignes de commande saisies est plus petit que le nombre de lignes de commande source
 // il reste à vérifier que ces variables aient le bon contenu
 
 // insertion des commande saisies dans la table ligne_commande_retour

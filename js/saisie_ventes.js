@@ -445,7 +445,8 @@
 																maj_client['pseudo']=$('#pseudo').val();
 																maj_client['prenom']=$('#prenom').val();
 																maj_client['nom']=$('#nom').val();
-																post('saisie_clients.php',maj_client);// on redirige vers saisie_clients.php
+																console.log(maj_client);
+//																post('saisie_clients.php',maj_client);// on redirige vers saisie_clients.php
 
 														}
 														else //si il y a une erreur

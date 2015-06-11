@@ -76,12 +76,17 @@
 		}
 
 		// fonction pour afficher les erreurs sql après exécution d'une requête pdo
-		function errors_pdo($pdo)
+		function errors_pdo(...$twoArgs)
 		{
+				$pdo=$twoArgs[0];
+				if(isset($twoArgs[1]))
+						$message=$twoArgs[1];
+				else
+						$message='Vide';
 				$erreurs_sql = $pdo->errorInfo();
 				if($erreurs_sql[1]!=null)
 				{
-						erreur('Erreur d\'exécution de la requete : '.print_r($erreurs_sql,true));
+						erreur($message.' Erreur d\'exécution de la requete : '.print_r($erreurs_sql,true));
 				}
 
 		}

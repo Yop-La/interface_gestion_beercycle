@@ -172,7 +172,7 @@ include("connexion.php");
 				'statut'=>$statut_commande[$_POST['fonction']]
 		));
 		$ref_cmdec=$bdd->lastInsertId(); 
-		errors_pdo($pdo_insert_cmde);
+		errors_pdo($pdo_insert_cmde,175);
 		$pdo_insert_cmde->closeCursor();
 
 		// on va maintenant enregistrer les lignes de vente
@@ -194,7 +194,7 @@ include("connexion.php");
 						'qte_vendue'=>$_POST['qte_vendu_'.$indice_ligne_vente],
 						'prix_vente'=>$_POST['prix_devise_'.$indice_ligne_vente]
 				));
-				errors_pdo($pdo_insert_ligne_cc);
+				errors_pdo($pdo_insert_ligne_cc, 197);
 				$pdo_insert_ligne_cc->closeCursor();
 		}
 
@@ -255,10 +255,10 @@ include("connexion.php");
 						$pdo_insert_stock=$bdd->prepare($req_insert_stock);
 						$pdo_insert_stock->execute(array(
 								'ref_lieu_stockage'=>$_POST["lieu_stockage_".$indice_ligne_vente],
-								'ref_produit'=>$id_produit,
+								'ref_produit'=>$ref_produit,
 								'qte'=>$qte_stock
 						));
-						errors_pdo($pdo_insert_stock);
+						errors_pdo($pdo_insert_stock,261);
 						$pdo_insert_stock->closeCursor();
 				
 				// maj du stock réelle dans le cas d'une vente immédiate
@@ -321,10 +321,10 @@ include("connexion.php");
 								$pdo_insert_stock=$bdd->prepare($req_insert_stock);
 								$pdo_insert_stock->execute(array(
 										'ref_lieu_stockage'=>$_POST["lieu_stockage_".$indice_ligne_vente],
-										'ref_produit'=>$id_produit,
+										'ref_produit'=>$ref_produit,
 										'qte'=>$qte_stock
 								));
-								errors_pdo($pdo_insert_stock);
+								errors_pdo($pdo_insert_stock,327);
 								$pdo_insert_stock->closeCursor();
 						}
 				}
@@ -361,7 +361,7 @@ include("connexion.php");
 						$_POST['montant_total'],
 						$_POST['devise'],
 				));
-				errors_pdo($pdo_factu_client);
+				errors_pdo($pdo_factu_client,364);
 				$pdo_factu_client->closeCursor();
 				
 				// on renvoie la ref de la vente qui sera utilisé dans le cas de la vente immédiate (saisie de l'IMEI)
